@@ -8,6 +8,11 @@ namespace SGJ
 {
 	class GAME_DLLEXPORT PlayerControllerComponent : public Poly::ComponentBase
 	{
+		RTTI_DECLARE_TYPE_DERIVED(PlayerControllerComponent, Poly::ComponentBase)
+		{
+			NO_RTTI_PROPERTY()
+		}
+
 	public:
 
 		PlayerControllerComponent(float movementSpeed = 12.0f, float jumpForce = 5.8f);
