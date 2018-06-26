@@ -18,7 +18,7 @@ void SGJ::CameraMovementSystem::CameraMovementUpdatePhase(Poly::World* world)
 	//double time = TimeSystem::GetTimerElapsedTime(world, Poly::eEngineTimer::GAMEPLAY);
 
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
-	Entity* player = gameMgrCmp->Player.Get();
+	Entity* player = gameMgrCmp->Player;
 	EntityTransform& playerTrans = player->GetTransform();
 	RigidBody2DComponent* rigidbodyCmp = world->GetComponent<RigidBody2DComponent>(player);
 

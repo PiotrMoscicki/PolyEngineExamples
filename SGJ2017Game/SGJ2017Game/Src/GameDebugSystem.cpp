@@ -20,14 +20,14 @@ void SGJ::Debug::DebugSystemPhase(Poly::World* world)
 	{
 		com->TextID = DeferredTaskSystem::SpawnEntityImmediate(world);
 
-		DeferredTaskSystem::AddComponentImmediate<ScreenSpaceTextComponent>(world, com->TextID.Get(), Vector2i(size.Width - 200, size.Height - 30), "Fonts/Raleway/Raleway-Regular.ttf", eResourceSource::ENGINE, 32);
+		DeferredTaskSystem::AddComponentImmediate<ScreenSpaceTextComponent>(world, com->TextID, Vector2i(size.Width - 200, size.Height - 30), "Fonts/Raleway/Raleway-Regular.ttf", eResourceSource::ENGINE, 32);
 	}
 
-	ScreenSpaceTextComponent* textCom = world->GetComponent<ScreenSpaceTextComponent>(com->TextID.Get());
+	ScreenSpaceTextComponent* textCom = world->GetComponent<ScreenSpaceTextComponent>(com->TextID);
 	textCom->SetScreenPosition(Vector2i(size.Width - 200, size.Height - 30));
 
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
-	RigidBody2DComponent* rb = world->GetComponent<RigidBody2DComponent>(gameMgrCmp->Player.Get());
+	RigidBody2DComponent* rb = world->GetComponent<RigidBody2DComponent>(gameMgrCmp->Player);
 
 
 	String text;

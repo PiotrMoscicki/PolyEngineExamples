@@ -3,6 +3,7 @@
 #include <ECS/ComponentBase.hpp>
 #include <Collections/Dynarray.hpp>
 #include <UniqueID.hpp>
+#include <Core.hpp>
 #include "Level.hpp"
 
 namespace SGJ
@@ -10,13 +11,13 @@ namespace SGJ
 	class GAME_DLLEXPORT GameManagerWorldComponent : public Poly::ComponentBase
 	{
 	public:
-		Poly::SafePtr<Poly::Entity> Player;
-		Poly::SafePtr<Poly::Entity> Camera;
+		Poly::Entity* Player;
+		Poly::Entity* Camera;
 
-		Poly::Dynarray<Poly::SafePtr<Poly::Entity>> LevelEntities;
-		Poly::Dynarray<Poly::SafePtr<Poly::Entity>> OtherEntities;
+		Poly::Dynarray<Poly::Entity*> LevelEntities;
+		Poly::Dynarray<Poly::Entity*> OtherEntities;
 
-		Poly::Dynarray<Poly::SafePtr<Poly::Entity>> SoundSampleEntities;
+		Poly::Dynarray<Poly::Entity*> SoundSampleEntities;
 
 		Poly::Dynarray<Level*> Levels;
 		size_t CurrentLevelID = 0;

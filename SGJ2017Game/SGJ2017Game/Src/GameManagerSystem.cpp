@@ -36,7 +36,7 @@ void SGJ::GameManagerSystem::Update(Poly::World* world)
 	// Proces sound entities
 	for (size_t i=0; i < manager->SoundSampleEntities.GetSize();)
 	{
-		Entity* soundEnt = manager->SoundSampleEntities[i].Get();
+		Entity* soundEnt = manager->SoundSampleEntities[i];
 		if (!SoundSystem::IsEmmiterActive(world, soundEnt))
 		{
 			manager->SoundSampleEntities.RemoveByIdx(i);
@@ -46,12 +46,12 @@ void SGJ::GameManagerSystem::Update(Poly::World* world)
 			++i;
 	}
 
-	PlayerControllerComponent* playerCmp = world->GetComponent<PlayerControllerComponent>(manager->Player.Get());
+	PlayerControllerComponent* playerCmp = world->GetComponent<PlayerControllerComponent>(manager->Player);
 	if (playerCmp->DeathCoolDowntime > 0)
 		return;
 
 	// Proces triggers
-	for (Physics2DWorldComponent::Collision col : world->GetWorldComponent<Physics2DWorldComponent>()->GetCollidingBodies(world->GetComponent<RigidBody2DComponent>(manager->Player.Get())))
+	for (Physics2DWorldComponent::Collision col : world->GetWorldComponent<Physics2DWorldComponent>()->GetCollidingBodies(world->GetComponent<RigidBody2DComponent>(manager->Player)))
 	{
 		TileComponent* obstacle = col.rb->GetSibling<TileComponent>();
 
@@ -297,7 +297,7 @@ void SGJ::GameManagerSystem::DespawnLevel(Poly::World* world)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 	for (auto ent : gameMgrCmp->LevelEntities)
-		DeferredTaskSystem::DestroyEntityImmediate(world, ent.Get());
+		DeferredTaskSystem::DestroyEntityImmediate(world, ent);
 	gameMgrCmp->LevelEntities.Clear();
 }
 
@@ -321,8 +321,8 @@ void SGJ::GameManagerSystem::PrepareNonlevelObjects(Poly::World * world)
 	// Spawn entities
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 	gameMgrCmp->Camera = DeferredTaskSystem::SpawnEntityImmediate(gEngine->GetWorld());
-	DeferredTaskSystem::AddComponentImmediate<Poly::CameraComponent>(gEngine->GetWorld(), gameMgrCmp->Camera.Get(), 60_deg, 1.0f, 1000.f);
-	DeferredTaskSystem::AddComponentImmediate<SGJ::CameraMovementComponent>(gEngine->GetWorld(), gameMgrCmp->Camera.Get());
+	DeferredTaskSystem::AddComponentImmediate<Poly::CameraComponent>(gEngine->GetWorld(), gameMgrCmp->Camera, 60_deg, 1.0f, 1000.f);
+	DeferredTaskSystem::AddComponentImmediate<SGJ::CameraMovementComponent>(gEngine->GetWorld(), gameMgrCmp->Camera);
 	// Set some camera position
 	EntityTransform& cameraTrans = gameMgrCmp->Camera->GetTransform();
 	cameraTrans.SetLocalTranslation(Vector(0, 0, 50.f));
@@ -359,8 +359,8 @@ void SGJ::GameManagerSystem::Cleanup(Poly::World* world)
 	DespawnLevel(world);
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 	for (auto ent : gameMgrCmp->OtherEntities)
-		DeferredTaskSystem::DestroyEntityImmediate(world, ent.Get());
+		DeferredTaskSystem::DestroyEntityImmediate(world, ent);
 
-	DeferredTaskSystem::DestroyEntityImmediate(world, gameMgrCmp->Player.Get());
-	DeferredTaskSystem::DestroyEntityImmediate(world, gameMgrCmp->Camera.Get());
+	DeferredTaskSystem::DestroyEntityImmediate(world, gameMgrCmp->Player);
+	DeferredTaskSystem::DestroyEntityImmediate(world, gameMgrCmp->Camera);
 }
