@@ -198,7 +198,6 @@ Entity* GameManagerSystem::SpawnPlayer(Poly::World* world, const Poly::Vector& p
 
 	Entity* playerFakeGlow = DeferredTaskSystem::SpawnEntityImmediate(world);
 	DeferredTaskSystem::AddComponentImmediate<DebugDrawableComponent>(world, playerFakeGlow, DebugDrawPreset::GFX);
-	EntityTransform& glowTrans = playerFakeGlow->GetTransform();
 	playerFakeGlow->SetParent(player);
 	Color playerLightColor = Color(0.0f, 1.0f, 0.0f, 0.5f);
 	DeferredTaskSystem::AddComponentImmediate<Poly::MeshRenderingComponent>(world, playerFakeGlow, "Quad.obj", eResourceSource::GAME);
