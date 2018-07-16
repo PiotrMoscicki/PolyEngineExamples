@@ -4,9 +4,11 @@
 #include <Resources/ResourceBase.hpp>
 #include <Collections/Dynarray.hpp>
 
+#pragma warning(disable: 4251)
+
 namespace SGJ
 {
-	enum class eTileType
+	enum class GAME_DLLEXPORT eTileType
 	{
 		NOTHING = -1,
 

@@ -6,10 +6,10 @@ namespace BT
 {
 	namespace GameManagerSystem
 	{
-		void InitializeDemoWorld(Poly::World* world);
+		void InitializeDemoWorld(Poly::Scene* world);
 
-		void SpawnBullet(Poly::World* world);
+		void SpawnBullet(Poly::Scene* world);
 
-		void Update(Poly::World* world);
+		void Update(Poly::Scene* world);
 	}
 }

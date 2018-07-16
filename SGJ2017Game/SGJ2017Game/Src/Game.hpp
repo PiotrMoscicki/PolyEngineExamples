@@ -6,6 +6,8 @@
 
 DECLARE_GAME()
 
+#pragma warning(disable: 4251)
+
 namespace Poly { class SoundResource; }
 
 class GAME_DLLEXPORT SGJGame : public Poly::IGame {

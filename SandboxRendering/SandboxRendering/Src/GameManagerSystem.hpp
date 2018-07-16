@@ -9,48 +9,48 @@ using namespace Poly;
 
 namespace GameManagerSystem
 {
-	void CreateScene(World* world);
+	void CreateScene(Scene* world);
 
 
-	Entity* CreateModel(World* world, String path);
+	Entity* CreateModel(Scene* world, String path);
 	
-	void CreateTextUI(World* world);
-	void CreateCamera(World* world);
-	void CreatePBRShpereGrid(World* world, Vector pos, Color albedo);
-	void CreateTranslucent(World* world);
-	void CreateSponza(World* world);
-	void CreateSponzaSample(World* world);
+	void CreateTextUI(Scene* world);
+	void CreateCamera(Scene* world);
+	void CreatePBRShpereGrid(Scene* world, Vector pos, Color albedo);
+	void CreateTranslucent(Scene* world);
+	void CreateSponza(Scene* world);
+	void CreateSponzaSample(Scene* world);
 	
-	void CreatePointLights(World* world, int quota);
-	Entity* CreatePointLight(World* world, Vector& position, float Range);
-	void CreateSpotLight(World* world, float Range);
-	void SpawnParticles(World* world);
-	void SpawnSpritesSheets(World* world);
-	void SpawnShaderball(World* world);
+	void CreatePointLights(Scene* world, int quota);
+	Entity* CreatePointLight(Scene* world, Vector& position, float Range);
+	void CreateSpotLight(Scene* world, float Range);
+	void SpawnParticles(Scene* world);
+	void SpawnSpritesSheets(Scene* world);
+	void SpawnShaderball(Scene* world);
 
-	void SpawnSpritesheet11(World* world, Vector pos);
-	void SpawnSpritesheet22(World* world, Vector pos);
-	void SpawnSpritesheet44(World* world, Vector pos);
-	void SpawnSpritesheet42(World* world, Vector pos);
-	void SpawnSpritesheet41(World* world, Vector pos);
-	void SpawnSpritesheet44Random(World* world, Vector pos);
-	void SpawnSpritesheetGandalf(World* world, Vector pos);
+	void SpawnSpritesheet11(Scene* world, Vector pos);
+	void SpawnSpritesheet22(Scene* world, Vector pos);
+	void SpawnSpritesheet44(Scene* world, Vector pos);
+	void SpawnSpritesheet42(Scene* world, Vector pos);
+	void SpawnSpritesheet41(Scene* world, Vector pos);
+	void SpawnSpritesheet44Random(Scene* world, Vector pos);
+	void SpawnSpritesheetGandalf(Scene* world, Vector pos);
 
-	ParticleComponent* SpawnEmitterDefault(World* world, Vector pos);
-	ParticleComponent* SpawnEmitterWorldSpace(World* world, Vector pos);
-	ParticleComponent* SpawnEmitterLocalSpace(World* world, Vector pos);
-	ParticleComponent* SpawnEmitterAmbient(World* world, Vector pos);
-	ParticleComponent* SpawnEmitterAmbientWind(World* world, Vector pos);
-	ParticleComponent* SpawnEmitterHeart(World* world, Vector pos);
-	ParticleComponent* SpawnEmitterHeartImpact(World* world, Vector pos);
-	ParticleComponent* SpawnEmitterHeartImpact2(World* world, Vector pos);
-	void SpawnHeartSystem(World* world);
+	ParticleComponent* SpawnEmitterDefault(Scene* world, Vector pos);
+	ParticleComponent* SpawnEmitterWorldSpace(Scene* world, Vector pos);
+	ParticleComponent* SpawnEmitterLocalSpace(Scene* world, Vector pos);
+	ParticleComponent* SpawnEmitterAmbient(Scene* world, Vector pos);
+	ParticleComponent* SpawnEmitterAmbientWind(Scene* world, Vector pos);
+	ParticleComponent* SpawnEmitterHeart(Scene* world, Vector pos);
+	ParticleComponent* SpawnEmitterHeartImpact(Scene* world, Vector pos);
+	ParticleComponent* SpawnEmitterHeartImpact2(Scene* world, Vector pos);
+	void SpawnHeartSystem(Scene* world);
 
-	void Update(World* world);
-	void UpdateParticles(World* world);
-	void UpdateLights(World* world);
-	void UpdateModel(World* world);
-	void UpdatePostProcess(World* world);
+	void Update(Scene* world);
+	void UpdateParticles(Scene* world);
+	void UpdateLights(Scene* world);
+	void UpdateModel(Scene* world);
+	void UpdatePostProcess(Scene* world);
 	
-	void Deinit(World* world);
+	void Deinit(Scene* world);
 }

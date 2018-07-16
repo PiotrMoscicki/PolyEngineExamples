@@ -12,7 +12,7 @@
 using namespace Poly;
 using namespace SGJ;
 
-void SGJ::CameraMovementSystem::CameraMovementUpdatePhase(Poly::World* world)
+void SGJ::CameraMovementSystem::CameraMovementUpdatePhase(Poly::Scene* world)
 {
 	auto deltaTime = float(TimeSystem::GetTimerDeltaTime(world, Poly::eEngineTimer::GAMEPLAY));
 	//double time = TimeSystem::GetTimerElapsedTime(world, Poly::eEngineTimer::GAMEPLAY);

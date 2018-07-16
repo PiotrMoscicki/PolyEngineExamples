@@ -15,7 +15,7 @@ void BulletTest::Init()
 {
 	gEngine->RegisterGameUpdatePhase(GameManagerSystem::Update);
 
-	World* world = gEngine->GetWorld();
+	Scene* world = gEngine->GetActiveScene();
 	DeferredTaskSystem::AddWorldComponentImmediate<BT::GameManagerWorldComponent>(world);
 
 	GameManagerSystem::InitializeDemoWorld(world);

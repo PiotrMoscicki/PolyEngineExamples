@@ -8,6 +8,6 @@ namespace SGJ
 {
 	namespace Debug
 	{
-		void GAME_DLLEXPORT DebugSystemPhase(Poly::World* world);
+		void GAME_DLLEXPORT DebugSystemPhase(Poly::Scene* world);
 	}
 }

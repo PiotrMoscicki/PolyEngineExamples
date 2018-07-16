@@ -9,7 +9,7 @@
 
 using namespace Poly;
 
-void SGJ::Debug::DebugSystemPhase(Poly::World* world)
+void SGJ::Debug::DebugSystemPhase(Poly::Scene* world)
 {
 	GameDebugWorldComponent* com = world->GetWorldComponent<GameDebugWorldComponent>();
 

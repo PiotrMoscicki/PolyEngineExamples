@@ -23,13 +23,13 @@ using namespace SGJ;
 using namespace Poly;
 
 
-void SGJ::GameManagerSystem::LoadLevel(Poly::World* world, const Poly::String& path)
+void SGJ::GameManagerSystem::LoadLevel(Poly::Scene* world, const Poly::String& path)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 	gameMgrCmp->Levels.PushBack(new Level(path));
 }
 
-void SGJ::GameManagerSystem::Update(Poly::World* world)
+void SGJ::GameManagerSystem::Update(Poly::Scene* world)
 {
 	GameManagerWorldComponent* manager = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -106,7 +106,7 @@ void SGJ::GameManagerSystem::Update(Poly::World* world)
 	}
 }
 
-Entity* GameManagerSystem::CreateTileObject(Poly::World* world, const Poly::Vector& position, eTileType tileType, String meshSource,
+Entity* GameManagerSystem::CreateTileObject(Poly::Scene* world, const Poly::Vector& position, eTileType tileType, String meshSource,
 	eRigidBody2DType physicsProperties = eRigidBody2DType::STATIC, const Vector& size = Vector(1, 1, 1), const Color& color = Color(0, 0, 0), bool colliding = true)
 {
 	eDebugDrawPreset ddrawPreset = physicsProperties == eRigidBody2DType::STATIC ? eDebugDrawPreset::STATIC : eDebugDrawPreset::DYNAMIC;
@@ -161,7 +161,7 @@ Entity* GameManagerSystem::CreateTileObject(Poly::World* world, const Poly::Vect
 	return tile;
 }
 
-Entity* GameManagerSystem::SpawnPlayer(Poly::World* world, const Poly::Vector& position)
+Entity* GameManagerSystem::SpawnPlayer(Poly::Scene* world, const Poly::Vector& position)
 {
 	Entity* player = DeferredTaskSystem::SpawnEntityImmediate(world);
 	DeferredTaskSystem::AddComponentImmediate<DebugDrawableComponent>(world, player, eDebugDrawPreset::PLAYER);
@@ -192,7 +192,7 @@ Entity* GameManagerSystem::SpawnPlayer(Poly::World* world, const Poly::Vector& p
 	return player;
 }
 
-void SGJ::GameManagerSystem::SpawnLevel(Poly::World* world, size_t idx)
+void SGJ::GameManagerSystem::SpawnLevel(Poly::Scene* world, size_t idx)
 {
 	// cleanup previous level
 	DespawnLevel(world);
@@ -276,7 +276,7 @@ void SGJ::GameManagerSystem::SpawnLevel(Poly::World* world, size_t idx)
 	}
 }
 
-void SGJ::GameManagerSystem::DespawnLevel(Poly::World* world)
+void SGJ::GameManagerSystem::DespawnLevel(Poly::Scene* world)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 	for (auto ent : gameMgrCmp->LevelEntities)
@@ -284,7 +284,7 @@ void SGJ::GameManagerSystem::DespawnLevel(Poly::World* world)
 	gameMgrCmp->LevelEntities.Clear();
 }
 
-void SGJ::GameManagerSystem::PlaySample(Poly::World* world, const String& file, const Vector& position, float pitch, float gain)
+void SGJ::GameManagerSystem::PlaySample(Poly::Scene* world, const String& file, const Vector& position, float pitch, float gain)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -299,22 +299,22 @@ void SGJ::GameManagerSystem::PlaySample(Poly::World* world, const String& file, 
 	gameMgrCmp->SoundSampleEntities.PushBack(ent);
 }
 
-void SGJ::GameManagerSystem::PrepareNonlevelObjects(Poly::World * world)
+void SGJ::GameManagerSystem::PrepareNonlevelObjects(Poly::Scene * world)
 {
 	// Spawn entities
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
-	gameMgrCmp->Camera = DeferredTaskSystem::SpawnEntityImmediate(gEngine->GetWorld());
-	DeferredTaskSystem::AddComponentImmediate<Poly::CameraComponent>(gEngine->GetWorld(), gameMgrCmp->Camera, 60_deg, 1.0f, 1000.f);
-	DeferredTaskSystem::AddComponentImmediate<SGJ::CameraMovementComponent>(gEngine->GetWorld(), gameMgrCmp->Camera);
+	gameMgrCmp->Camera = DeferredTaskSystem::SpawnEntityImmediate(gEngine->GetActiveScene());
+	DeferredTaskSystem::AddComponentImmediate<Poly::CameraComponent>(gEngine->GetActiveScene(), gameMgrCmp->Camera, 60_deg, 1.0f, 1000.f);
+	DeferredTaskSystem::AddComponentImmediate<SGJ::CameraMovementComponent>(gEngine->GetActiveScene(), gameMgrCmp->Camera);
 	// Set some camera position
 	EntityTransform& cameraTrans = gameMgrCmp->Camera->GetTransform();
 	cameraTrans.SetLocalTranslation(Vector(0, 0, 50.f));
 
 	// Set background
-	//double Time = gEngine->GetWorld()->GetWorldComponent<TimeWorldComponent>()->GetGameplayTime();
-	//Background = DeferredTaskSystem::SpawnEntityImmediate(gEngine->GetWorld());
-	//DeferredTaskSystem::AddComponentImmediate<Poly::BackgroundComponent>(gEngine->GetWorld(), Background, Time);
-	//GameManagerComponent* gameManagerComponent = Engine->GetWorld()->GetComponent<GameManagerComponent>(GameManager);
+	//double Time = gEngine->GetActiveScene()->GetWorldComponent<TimeWorldComponent>()->GetGameplayTime();
+	//Background = DeferredTaskSystem::SpawnEntityImmediate(gEngine->GetActiveScene());
+	//DeferredTaskSystem::AddComponentImmediate<Poly::BackgroundComponent>(gEngine->GetActiveScene(), Background, Time);
+	//GameManagerComponent* gameManagerComponent = Engine->GetActiveScene()->GetComponent<GameManagerComponent>(GameManager);
 	//gEngine->RegisterGameUpdatePhase(BackgroundSystem::BackgroundSystemSystemPhase);
 
 	// SETUP SCENE HERE
@@ -326,7 +326,7 @@ void SGJ::GameManagerSystem::PrepareNonlevelObjects(Poly::World * world)
 	SoundSystem::SetEmitterGain(world, backgroundPlayer, 0.1f);
 }
 
-void SGJ::GameManagerSystem::Cleanup(Poly::World* world)
+void SGJ::GameManagerSystem::Cleanup(Poly::Scene* world)
 {
 	DespawnLevel(world);
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();

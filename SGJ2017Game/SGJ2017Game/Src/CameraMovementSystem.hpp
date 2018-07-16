@@ -6,7 +6,7 @@ namespace SGJ
 {
 	namespace CameraMovementSystem
 	{
-		void CameraMovementUpdatePhase(Poly::World* world);
+		void CameraMovementUpdatePhase(Poly::Scene* world);
 
 		float ElasticEaseOut(float p);
 	}

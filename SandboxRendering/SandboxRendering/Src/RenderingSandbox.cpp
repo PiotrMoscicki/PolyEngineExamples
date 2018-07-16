@@ -25,12 +25,12 @@ void RenderingSandbox::Init()
 {
 	gEngine->RegisterGameUpdatePhase(GameManagerSystem::Update);
 
-	DeferredTaskSystem::AddWorldComponentImmediate<GameManagerWorldComponent>(gEngine->GetWorld());
+	DeferredTaskSystem::AddWorldComponentImmediate<GameManagerWorldComponent>(gEngine->GetActiveScene());
 	
-	GameManagerSystem::CreateScene(gEngine->GetWorld());
+	GameManagerSystem::CreateScene(gEngine->GetActiveScene());
 };
 
 void RenderingSandbox::Deinit()
 {
-	GameManagerSystem::Deinit(gEngine->GetWorld());
+	GameManagerSystem::Deinit(gEngine->GetActiveScene());
 };

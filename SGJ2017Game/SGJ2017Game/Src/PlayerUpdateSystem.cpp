@@ -14,7 +14,7 @@ using namespace Poly;
 
 namespace SGJ
 {
-	void PlayerUpdateSystem::Update(World* world)
+	void PlayerUpdateSystem::Update(Scene* world)
 	{
 		double deltaTime = TimeSystem::GetTimerDeltaTime(world, Poly::eEngineTimer::GAMEPLAY);
 
@@ -52,7 +52,7 @@ namespace SGJ
 		}
 	}
 
-	void PlayerUpdateSystem::KillPlayer(Poly::World * world)
+	void PlayerUpdateSystem::KillPlayer(Poly::Scene * world)
 	{
 		GameManagerWorldComponent* manager = world->GetWorldComponent<GameManagerWorldComponent>();
 		PlayerControllerComponent* playerCmp = world->GetComponent<PlayerControllerComponent>(manager->Player);
@@ -60,7 +60,7 @@ namespace SGJ
 		playerCmp->DeathCoolDowntime = playerCmp->DeathCoolDowntimeMax;
 	}
 
-	void PlayerUpdateSystem::ResetPlayer(Poly::World* world, const Vector& spawnLocation)
+	void PlayerUpdateSystem::ResetPlayer(Poly::Scene* world, const Vector& spawnLocation)
 	{
 		GameManagerWorldComponent* manager = world->GetWorldComponent<GameManagerWorldComponent>();
 		PlayerControllerComponent* playerCmp = world->GetComponent<PlayerControllerComponent>(manager->Player);
@@ -81,7 +81,7 @@ namespace SGJ
 		rbCmp->UpdatePosition();
 	}
 
-	void PlayerUpdateSystem::TryPlayerJump(Poly::World* world)
+	void PlayerUpdateSystem::TryPlayerJump(Poly::Scene* world)
 	{
 		Entity* player = world->GetWorldComponent<GameManagerWorldComponent>()->Player;
 
@@ -107,7 +107,7 @@ namespace SGJ
 		GameManagerSystem::PlaySample(world, "Audio/jump-sound.ogg", player->GetTransform().GetGlobalTranslation(), 1.5, 1.5);
 	}
 
-	void PlayerUpdateSystem::UpdateInAir(Poly::World* world)
+	void PlayerUpdateSystem::UpdateInAir(Poly::Scene* world)
 	{
 		GameManagerWorldComponent* mgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 		PlayerControllerComponent* playerCmp = world->GetComponent<PlayerControllerComponent>(mgrCmp->Player);
@@ -145,7 +145,7 @@ namespace SGJ
 		return std::sin(-13.f * 3.14f * (p + 1.f)) * std::pow(2.f, -10.f * p) + 1.f;
 	}
 
-	void PlayerUpdateSystem::ProcessJumpStrech(Poly::World * world)
+	void PlayerUpdateSystem::ProcessJumpStrech(Poly::Scene * world)
 	{
 		GameManagerWorldComponent* mgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 		PlayerControllerComponent* playerCmp = world->GetComponent<PlayerControllerComponent>(mgrCmp->Player);
@@ -176,7 +176,7 @@ namespace SGJ
 		}
 	}
 
-	void PlayerUpdateSystem::PickupPowerup(Poly::World * world, ePowerup powerup)
+	void PlayerUpdateSystem::PickupPowerup(Poly::Scene * world, ePowerup powerup)
 	{
 		GameManagerWorldComponent* mgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 		PlayerControllerComponent* playerCmp = world->GetComponent<PlayerControllerComponent>(mgrCmp->Player);
@@ -188,7 +188,7 @@ namespace SGJ
 		}
 	}
 
-	void PlayerUpdateSystem::UpdateDeathAction(Poly::World * world)
+	void PlayerUpdateSystem::UpdateDeathAction(Poly::Scene * world)
 	{
 		GameManagerWorldComponent* mgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 		PlayerControllerComponent* playerCmp = world->GetComponent<PlayerControllerComponent>(mgrCmp->Player);
@@ -225,7 +225,7 @@ namespace SGJ
 		}
 	}
 
-	void PlayerUpdateSystem::PushPlayer(Poly::World* world, const Poly::Vector& normal, float force)
+	void PlayerUpdateSystem::PushPlayer(Poly::Scene* world, const Poly::Vector& normal, float force)
 	{
 		GameManagerWorldComponent* manager = world->GetWorldComponent<GameManagerWorldComponent>();
 		RigidBody2DComponent* rbCmp = world->GetComponent<RigidBody2DComponent>(manager->Player);

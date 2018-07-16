@@ -6,7 +6,7 @@
 
 namespace BT
 {
-	class GAME_DLLEXPORT GameManagerWorldComponent : public Poly::ComponentBase
+	class GameManagerWorldComponent : public Poly::ComponentBase
 	{
 	public:
 		GameManagerWorldComponent() = default;

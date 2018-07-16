@@ -15,7 +15,7 @@ namespace SGJ
 
 	namespace PlayerUpdateSystem
 	{
-		void Update(Poly::World* world);
+		void Update(Poly::Scene* world);
 
 		void PlayerAlive(Poly::World * world, SGJ::PlayerControllerComponent * playerCmp, double deltaTime, Poly::RigidBody2DComponent * rigidbodyCmp, double time);
 
@@ -23,14 +23,14 @@ namespace SGJ
 
 		float ElasticEaseOut(float p);
 
-		void KillPlayer(Poly::World* world);
-		void ResetPlayer(Poly::World* world, const Poly::Vector& spawnLocation);
-		void TryPlayerJump(Poly::World* world);
-		void UpdateInAir(Poly::World* world);
-		void ProcessJumpStrech(Poly::World* world);
-		void PickupPowerup(Poly::World* world, ePowerup powerup);
-		void UpdateDeathAction(Poly::World* world);
-		void PushPlayer(Poly::World * world, const Poly::Vector& normal, float force);
+		void KillPlayer(Poly::Scene* world);
+		void ResetPlayer(Poly::Scene* world, const Poly::Vector& spawnLocation);
+		void TryPlayerJump(Poly::Scene* world);
+		void UpdateInAir(Poly::Scene* world);
+		void ProcessJumpStrech(Poly::Scene* world);
+		void PickupPowerup(Poly::Scene* world, ePowerup powerup);
+		void UpdateDeathAction(Poly::Scene* world);
+		void PushPlayer(Poly::Scene* world, const Poly::Vector& normal, float force);
 	}
 
 }

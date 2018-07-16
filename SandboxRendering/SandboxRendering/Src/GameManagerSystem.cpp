@@ -20,7 +20,7 @@
 
 using namespace Poly;
 
-void GameManagerSystem::CreateScene(World* world)
+void GameManagerSystem::CreateScene(Scene* world)
 {
 	gConsole.LogInfo("GameManagerSystem::CreateScene");
 
@@ -61,7 +61,7 @@ void GameManagerSystem::CreateScene(World* world)
 	// SpawnParticles(world);
 }
 
-void GameManagerSystem::CreateTextUI(World* world)
+void GameManagerSystem::CreateTextUI(Scene* world)
 {
 	Entity* text = DeferredTaskSystem::SpawnEntityImmediate(world);
 	DeferredTaskSystem::AddComponentImmediate<ScreenSpaceTextComponent>(
@@ -75,7 +75,7 @@ void GameManagerSystem::CreateTextUI(World* world)
 	);
 }
 
-Entity* GameManagerSystem::CreateModel(World* world, String path)
+Entity* GameManagerSystem::CreateModel(Scene* world, String path)
 {
 	Entity* model = DeferredTaskSystem::SpawnEntityImmediate(world);
 	DeferredTaskSystem::AddComponentImmediate<DebugDrawableComponent>(world, model, eDebugDrawPreset::STATIC);
@@ -83,7 +83,7 @@ Entity* GameManagerSystem::CreateModel(World* world, String path)
 	return model;
 }
 
-void GameManagerSystem::CreateCamera(World* world)
+void GameManagerSystem::CreateCamera(Scene* world)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -107,7 +107,7 @@ void GameManagerSystem::CreateCamera(World* world)
 	
 }
 
-void GameManagerSystem::CreatePBRShpereGrid(World* world, Vector pos, Color albedo)
+void GameManagerSystem::CreatePBRShpereGrid(Scene* world, Vector pos, Color albedo)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -151,8 +151,8 @@ void GameManagerSystem::CreatePBRShpereGrid(World* world, Vector pos, Color albe
 			sphereTrans.SetLocalScale(Vector(1.0f, 1.0f, 1.0f) * 20.0f);
 			sphereTrans.SetLocalRotation(Quaternion(Vector::UNIT_Z, 90.0_deg));
 			MeshRenderingComponent* meshCmp = DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(world, sphere, "Models/Primitives/Sphere_HighPoly.obj", eResourceSource::GAME);
-			int materialsNum = meshCmp->GetMesh()->GetSubMeshes().GetSize();
-			for (int i = 0; i < materialsNum; ++i)
+			size_t materialsNum = meshCmp->GetMesh()->GetSubMeshes().GetSize();
+			for (size_t i = 0; i < materialsNum; ++i)
 			{
 				float Roughness	= ((0.01f + z) / 5.0f);
 				float Metallic	= ((0.01f + y) / 5.0f);
@@ -170,7 +170,7 @@ void GameManagerSystem::CreatePBRShpereGrid(World* world, Vector pos, Color albe
 	}
 }
 
-void GameManagerSystem::CreateTranslucent(World* world)
+void GameManagerSystem::CreateTranslucent(Scene* world)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -190,8 +190,8 @@ void GameManagerSystem::CreateTranslucent(World* world)
 		translucentTrans.SetGlobalTranslation(Vector(0.0f, 200.0f, 0.0f) + randomOffset);
 		translucentTrans.SetLocalScale(Vector(100.0f, 100.0f, 100.0f));
 		MeshRenderingComponent* meshCmp = DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(world, translucent, "Models/Primitives/Sphere_HighPoly.obj", eResourceSource::GAME);
-		int materialsNum = meshCmp->GetMesh()->GetSubMeshes().GetSize();
-		for (int i = 0; i < materialsNum; ++i)
+		size_t materialsNum = meshCmp->GetMesh()->GetSubMeshes().GetSize();
+		for (size_t i = 0; i < materialsNum; ++i)
 		{
 			meshCmp->SetMaterial(i, material);
 		}
@@ -200,7 +200,7 @@ void GameManagerSystem::CreateTranslucent(World* world)
 	}
 }
 
-void GameManagerSystem::CreateSponza(World* world)
+void GameManagerSystem::CreateSponza(Scene* world)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -225,7 +225,7 @@ void GameManagerSystem::CreateSponza(World* world)
 	gameMgrCmp->GameEntities.PushBack(sponza);
 }
 
-void GameManagerSystem::CreateSponzaSample(World* world)
+void GameManagerSystem::CreateSponzaSample(Scene* world)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -248,7 +248,7 @@ void GameManagerSystem::CreateSponzaSample(World* world)
 	gameMgrCmp->PointLightEntities.PushBack(lightEntity);
 }
 
-void GameManagerSystem::Update(World* world)
+void GameManagerSystem::Update(Scene* world)
 {
 	UpdateParticles(world);
 
@@ -263,7 +263,7 @@ void GameManagerSystem::Update(World* world)
 	// UpdatePostProcess(world);
 }
 
-void GameManagerSystem::UpdatePostProcess(World* world)
+void GameManagerSystem::UpdatePostProcess(Scene* world)
 {
 	float time = (float)(world->GetWorldComponent<TimeWorldComponent>()->GetGameplayTime());
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
@@ -273,12 +273,12 @@ void GameManagerSystem::UpdatePostProcess(World* world)
 	gConsole.LogInfo("GameManagerSystem::Update exposure: {}", gameMgrCmp->PostCmp->Exposure);
 }
 
-void GameManagerSystem::Deinit(World* world)
+void GameManagerSystem::Deinit(Scene* world)
 {
 	gConsole.LogInfo("GameManagerSystem::Cleanup");
 }
 
-void GameManagerSystem::CreatePointLights(World* world, int quota)
+void GameManagerSystem::CreatePointLights(Scene* world, int quota)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -304,7 +304,7 @@ void GameManagerSystem::CreatePointLights(World* world, int quota)
 	}
 }
 
-void GameManagerSystem::UpdateLights(World* world)
+void GameManagerSystem::UpdateLights(Scene* world)
 {
 	float time = (float)(world->GetWorldComponent<TimeWorldComponent>()->GetGameplayTime());
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
@@ -319,7 +319,7 @@ void GameManagerSystem::UpdateLights(World* world)
 	}
 }
 
-void GameManagerSystem::UpdateModel(World* world)
+void GameManagerSystem::UpdateModel(Scene* world)
 {
 	float time = (float)(world->GetWorldComponent<TimeWorldComponent>()->GetGameplayTime());
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
@@ -330,7 +330,7 @@ void GameManagerSystem::UpdateModel(World* world)
 	}
 }
 
-Entity* GameManagerSystem::CreatePointLight(World* world, Vector& position, float Range)
+Entity* GameManagerSystem::CreatePointLight(Scene* world, Vector& position, float Range)
 {
 	Color lightColor = Color(RandomRange(0.0f, 1.0f), RandomRange(0.0f, 1.0f), RandomRange(0.0f, 1.0f));
 
@@ -345,7 +345,7 @@ Entity* GameManagerSystem::CreatePointLight(World* world, Vector& position, floa
 	return pointLight;
 }
 
-void GameManagerSystem::CreateSpotLight(World* world, float Range)
+void GameManagerSystem::CreateSpotLight(Scene* world, float Range)
 {
 	Vector spotLightPos = Vector(50.0f, 50.0f, 0.0f);
 	Color lightColor = Color(1.0f, 0.5f, 0.0f) + Color(RandomRange(0.0f, 1.0f), RandomRange(0.0f, 0.5f), RandomRange(0.0f, 0.2f));
@@ -367,7 +367,7 @@ void GameManagerSystem::CreateSpotLight(World* world, float Range)
 	spotLightDebugSourceTrans.SetLocalTranslation(Vector(0.0f, 0.0f, 0.0f));
 }
 
-void GameManagerSystem::UpdateParticles(World* world)
+void GameManagerSystem::UpdateParticles(Scene* world)
 {
 	float time = (float)(world->GetWorldComponent<TimeWorldComponent>()->GetGameplayTime());
 	// float deltaTime = (float)(TimeSystem::GetTimerDeltaTime(world, Poly::eEngineTimer::GAMEPLAY));
@@ -414,7 +414,7 @@ void GameManagerSystem::UpdateParticles(World* world)
 	}
 }
 
-void GameManagerSystem::SpawnParticles(World* world)
+void GameManagerSystem::SpawnParticles(Scene* world)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 	Vector particlesPosition = Vector(0.0f, 0.0f, 0.0f);
@@ -427,7 +427,7 @@ void GameManagerSystem::SpawnParticles(World* world)
 	// SpawnHeartSystem(world);
 }
 
-void GameManagerSystem::SpawnSpritesSheets(World* world)
+void GameManagerSystem::SpawnSpritesSheets(Scene* world)
 {
 	Vector spritesheetsPosition = Vector(-15.0f, 0.0f, 0.0f);
 	SpawnSpritesheet11(world, spritesheetsPosition + Vector(-5.0f, 4.0f, 0.0f));
@@ -439,7 +439,7 @@ void GameManagerSystem::SpawnSpritesSheets(World* world)
 	SpawnSpritesheetGandalf(world, spritesheetsPosition + Vector(0.0f, 12.0f, 0.0f));
 }
 
-void GameManagerSystem::SpawnShaderball(World* world)
+void GameManagerSystem::SpawnShaderball(Scene* world)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -457,7 +457,7 @@ void GameManagerSystem::SpawnShaderball(World* world)
 
 // #pragma region Spritesheet examples
 
-void GameManagerSystem::SpawnSpritesheet11(World* world, Vector pos)
+void GameManagerSystem::SpawnSpritesheet11(Scene* world, Vector pos)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -472,7 +472,7 @@ void GameManagerSystem::SpawnSpritesheet11(World* world, Vector pos)
 	gameMgrCmp->GameEntities.PushBack(spriteSheetEnt);
 }
 
-void GameManagerSystem::SpawnSpritesheet22(World* world, Vector pos)
+void GameManagerSystem::SpawnSpritesheet22(Scene* world, Vector pos)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -487,7 +487,7 @@ void GameManagerSystem::SpawnSpritesheet22(World* world, Vector pos)
 	gameMgrCmp->GameEntities.PushBack(spriteSheetEnt);
 }
 
-void GameManagerSystem::SpawnSpritesheet44(World* world, Vector pos)
+void GameManagerSystem::SpawnSpritesheet44(Scene* world, Vector pos)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -503,7 +503,7 @@ void GameManagerSystem::SpawnSpritesheet44(World* world, Vector pos)
 	gameMgrCmp->GameEntities.PushBack(spriteSheetEnt);
 }
 
-void GameManagerSystem::SpawnSpritesheet42(World* world, Vector pos)
+void GameManagerSystem::SpawnSpritesheet42(Scene* world, Vector pos)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -518,7 +518,7 @@ void GameManagerSystem::SpawnSpritesheet42(World* world, Vector pos)
 	gameMgrCmp->GameEntities.PushBack(spriteSheetEnt);
 }
 
-void GameManagerSystem::SpawnSpritesheet41(World* world, Vector pos)
+void GameManagerSystem::SpawnSpritesheet41(Scene* world, Vector pos)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -534,7 +534,7 @@ void GameManagerSystem::SpawnSpritesheet41(World* world, Vector pos)
 	gameMgrCmp->GameEntities.PushBack(spriteSheetEnt);
 }
 
-void GameManagerSystem::SpawnSpritesheet44Random(World* world, Vector pos)
+void GameManagerSystem::SpawnSpritesheet44Random(Scene* world, Vector pos)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -550,7 +550,7 @@ void GameManagerSystem::SpawnSpritesheet44Random(World* world, Vector pos)
 	gameMgrCmp->GameEntities.PushBack(spriteSheetEnt);
 }
 
-void GameManagerSystem::SpawnSpritesheetGandalf(World* world, Vector pos)
+void GameManagerSystem::SpawnSpritesheetGandalf(Scene* world, Vector pos)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -571,7 +571,7 @@ void GameManagerSystem::SpawnSpritesheetGandalf(World* world, Vector pos)
 
 // #pragma region Particle Examples
 
-ParticleComponent* GameManagerSystem::SpawnEmitterDefault(World* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterDefault(Scene* world, Vector pos)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -604,7 +604,7 @@ ParticleComponent* GameManagerSystem::SpawnEmitterDefault(World* world, Vector p
 	return particleCmp;
 }
 
-ParticleComponent* GameManagerSystem::SpawnEmitterWorldSpace(World* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterWorldSpace(Scene* world, Vector pos)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -635,7 +635,7 @@ ParticleComponent* GameManagerSystem::SpawnEmitterWorldSpace(World* world, Vecto
 	return particleCmp;
 }
 
-ParticleComponent* GameManagerSystem::SpawnEmitterLocalSpace(World* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterLocalSpace(Scene* world, Vector pos)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -664,7 +664,7 @@ ParticleComponent* GameManagerSystem::SpawnEmitterLocalSpace(World* world, Vecto
 	return particleCmp;
 }
 
-ParticleComponent* GameManagerSystem::SpawnEmitterAmbient(World* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterAmbient(Scene* world, Vector pos)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -699,7 +699,7 @@ ParticleComponent* GameManagerSystem::SpawnEmitterAmbient(World* world, Vector p
 	return particleCmp;
 }
 
-ParticleComponent* GameManagerSystem::SpawnEmitterAmbientWind(World* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterAmbientWind(Scene* world, Vector pos)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -734,7 +734,7 @@ ParticleComponent* GameManagerSystem::SpawnEmitterAmbientWind(World* world, Vect
 	return particleCmp;
 }
 
-ParticleComponent* GameManagerSystem::SpawnEmitterHeart(World* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterHeart(Scene* world, Vector pos)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -775,7 +775,7 @@ ParticleComponent* GameManagerSystem::SpawnEmitterHeart(World* world, Vector pos
 	return particleCmp;
 }
 
-ParticleComponent* GameManagerSystem::SpawnEmitterHeartImpact(World* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterHeartImpact(Scene* world, Vector pos)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -821,7 +821,7 @@ ParticleComponent* GameManagerSystem::SpawnEmitterHeartImpact(World* world, Vect
 	return particleCmp;
 }
 
-ParticleComponent* GameManagerSystem::SpawnEmitterHeartImpact2(World* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterHeartImpact2(Scene* world, Vector pos)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 
@@ -869,7 +869,7 @@ ParticleComponent* GameManagerSystem::SpawnEmitterHeartImpact2(World* world, Vec
 	return particleCmp;
 }
 
-void GameManagerSystem::SpawnHeartSystem(World* world)
+void GameManagerSystem::SpawnHeartSystem(Scene* world)
 {
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
 

@@ -36,27 +36,27 @@ void SGJGame::Init()
 	gEngine->RegisterGameUpdatePhase(SGJ::CameraMovementSystem::CameraMovementUpdatePhase);
 	//gEngine->RegisterGameUpdatePhase(SGJ::Debug::DebugSystemPhase);
 	
-	DeferredTaskSystem::AddWorldComponentImmediate<SGJ::GameManagerWorldComponent>(gEngine->GetWorld());
-	DeferredTaskSystem::AddWorldComponentImmediate<SGJ::GameDebugWorldComponent>(gEngine->GetWorld());
+	DeferredTaskSystem::AddWorldComponentImmediate<SGJ::GameManagerWorldComponent>(gEngine->GetActiveScene());
+	DeferredTaskSystem::AddWorldComponentImmediate<SGJ::GameDebugWorldComponent>(gEngine->GetActiveScene());
 
-	SGJ::GameManagerSystem::PrepareNonlevelObjects(gEngine->GetWorld());
+	SGJ::GameManagerSystem::PrepareNonlevelObjects(gEngine->GetActiveScene());
 		
-	Entity* Camera = gEngine->GetWorld()->GetWorldComponent<SGJ::GameManagerWorldComponent>()->Camera;
-	gEngine->GetWorld()->GetWorldComponent<ViewportWorldComponent>()->SetCamera(0, gEngine->GetWorld()->GetComponent<Poly::CameraComponent>(Camera));
-	DeferredTaskSystem::AddComponent<PostprocessSettingsComponent>(gEngine->GetWorld(), Camera);
+	Entity* Camera = gEngine->GetActiveScene()->GetWorldComponent<SGJ::GameManagerWorldComponent>()->Camera;
+	gEngine->GetActiveScene()->GetWorldComponent<ViewportWorldComponent>()->SetCamera(0, gEngine->GetActiveScene()->GetComponent<Poly::CameraComponent>(Camera));
+	DeferredTaskSystem::AddComponent<PostprocessSettingsComponent>(gEngine->GetActiveScene(), Camera);
 
-	DeferredTaskSystem::AddWorldComponentImmediate<SkyboxWorldComponent>(gEngine->GetWorld(), "HDR/HDR.hdr", eResourceSource::GAME);
+	DeferredTaskSystem::AddWorldComponentImmediate<SkyboxWorldComponent>(gEngine->GetActiveScene(), "HDR/HDR.hdr", eResourceSource::GAME);
 	// load levels
-	SGJ::GameManagerSystem::LoadLevel(gEngine->GetWorld(), "Levels/Level0.csv");
-	//SGJ::GameManagerSystem::LoadLevel(gEngine->GetWorld(), "Levels/Level0_1.csv");
-	//SGJ::GameManagerSystem::LoadLevel(gEngine->GetWorld(), "Levels/Level0_2.csv"); // gut
-	SGJ::GameManagerSystem::LoadLevel(gEngine->GetWorld(), "Levels/Level0_3.csv"); // gut
-	SGJ::GameManagerSystem::LoadLevel(gEngine->GetWorld(), "Levels/Level0_2.csv");
-	SGJ::GameManagerSystem::LoadLevel(gEngine->GetWorld(), "Levels/Level1.csv");
-	SGJ::GameManagerSystem::LoadLevel(gEngine->GetWorld(), "Levels/Level2.csv");
-	SGJ::GameManagerSystem::LoadLevel(gEngine->GetWorld(), "Levels/Level3.csv");
-	SGJ::GameManagerSystem::LoadLevel(gEngine->GetWorld(), "Levels/Level4.csv");
-	SGJ::GameManagerSystem::SpawnLevel(gEngine->GetWorld(), 0);
+	SGJ::GameManagerSystem::LoadLevel(gEngine->GetActiveScene(), "Levels/Level0.csv");
+	//SGJ::GameManagerSystem::LoadLevel(gEngine->GetActiveScene(), "Levels/Level0_1.csv");
+	//SGJ::GameManagerSystem::LoadLevel(gEngine->GetActiveScene(), "Levels/Level0_2.csv"); // gut
+	SGJ::GameManagerSystem::LoadLevel(gEngine->GetActiveScene(), "Levels/Level0_3.csv"); // gut
+	SGJ::GameManagerSystem::LoadLevel(gEngine->GetActiveScene(), "Levels/Level0_2.csv");
+	SGJ::GameManagerSystem::LoadLevel(gEngine->GetActiveScene(), "Levels/Level1.csv");
+	SGJ::GameManagerSystem::LoadLevel(gEngine->GetActiveScene(), "Levels/Level2.csv");
+	SGJ::GameManagerSystem::LoadLevel(gEngine->GetActiveScene(), "Levels/Level3.csv");
+	SGJ::GameManagerSystem::LoadLevel(gEngine->GetActiveScene(), "Levels/Level4.csv");
+	SGJ::GameManagerSystem::SpawnLevel(gEngine->GetActiveScene(), 0);
 
 	SoundsPreload.PushBack(ResourceManager<SoundResource>::Load("Audio/jump-sound.ogg", eResourceSource::GAME));
 	SoundsPreload.PushBack(ResourceManager<SoundResource>::Load("Audio/death-sound.ogg", eResourceSource::GAME));
@@ -65,7 +65,7 @@ void SGJGame::Init()
 
 void SGJGame::Deinit()
 {
-	SGJ::GameManagerSystem::Cleanup(gEngine->GetWorld());
+	SGJ::GameManagerSystem::Cleanup(gEngine->GetActiveScene());
 	for(SoundResource* res : SoundsPreload)
 		ResourceManager<SoundResource>::Release(res);
 }

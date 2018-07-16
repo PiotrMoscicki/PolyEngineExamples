@@ -9,7 +9,7 @@
 
 using namespace Poly;
 
-class GAME_DLLEXPORT GameManagerWorldComponent : public ComponentBase
+class GameManagerWorldComponent : public ComponentBase
 {
 public:
 	SafePtr<Entity> Camera;

@@ -14,7 +14,7 @@ namespace SGJ
 {
 	//this function checks which powerup is active and applies its effects
 	//TODO it should probably be split into few smaller functions
-	void PowerupSystem::ApplyPowerupsAndInput(World* world, PlayerControllerComponent* playerCmp)
+	void PowerupSystem::ApplyPowerupsAndInput(Scene* world, PlayerControllerComponent* playerCmp)
 	{
 		Poly::RigidBody2DComponent* rbCmp = playerCmp->GetSibling<Poly::RigidBody2DComponent>();
 		//double deltaTime = TimeSystem::GetTimerDeltaTime(world, Poly::eEngineTimer::GAMEPLAY);
