@@ -106,12 +106,13 @@ void SGJ::GameManagerSystem::Update(Poly::Scene* world)
 	}
 }
 
-Entity* GameManagerSystem::CreateTileObject(Poly::Scene* world, const Poly::Vector& position, eTileType tileType, String meshSource,
+Entity* GameManagerSystem::CreateTileObject(const Poly::String& name, Poly::Scene* world, const Poly::Vector& position, eTileType tileType, String meshSource,
 	eRigidBody2DType physicsProperties = eRigidBody2DType::STATIC, const Vector& size = Vector(1, 1, 1), const Color& color = Color(0, 0, 0), bool colliding = true)
 {
 	eDebugDrawPreset ddrawPreset = physicsProperties == eRigidBody2DType::STATIC ? eDebugDrawPreset::STATIC : eDebugDrawPreset::DYNAMIC;
 
 	Entity* tile = DeferredTaskSystem::SpawnEntityImmediate(world);
+	tile->SetName(name);
 	DeferredTaskSystem::AddComponentImmediate<DebugDrawableComponent>(world, tile, ddrawPreset);
 	DeferredTaskSystem::AddComponentImmediate<TileComponent>(world, tile, tileType);
 	DeferredTaskSystem::AddComponentImmediate<Box2DColliderComponent>(world, tile, size * 2);
@@ -164,6 +165,7 @@ Entity* GameManagerSystem::CreateTileObject(Poly::Scene* world, const Poly::Vect
 Entity* GameManagerSystem::SpawnPlayer(Poly::Scene* world, const Poly::Vector& position)
 {
 	Entity* player = DeferredTaskSystem::SpawnEntityImmediate(world);
+	player->SetName("Player");
 	DeferredTaskSystem::AddComponentImmediate<DebugDrawableComponent>(world, player, eDebugDrawPreset::PLAYER);
 	DeferredTaskSystem::AddComponentImmediate<PlayerControllerComponent>(world, player);
 	PlayerControllerComponent* p = world->GetComponent<PlayerControllerComponent>(player);
@@ -250,12 +252,18 @@ void SGJ::GameManagerSystem::SpawnLevel(Poly::Scene* world, size_t idx)
 					gameMgrCmp->Player = SpawnPlayer(world, Vector(posW, -posH, 0));
 				break;
 			case eTileType::PLAYERENDPOS:
-				gameMgrCmp->LevelEntities.PushBack(CreateTileObject(world, Vector(posW, -posH, 0.f), level->Tiles[idx], "Models/cube.obj", eRigidBody2DType::STATIC, Vector(0.5f, 0.5f, 0.5f), Color(0.f, 0.f, 1.5f)));
+				gameMgrCmp->LevelEntities.PushBack(CreateTileObject("Player End Position", world, Vector(posW, -posH, 0.f), level->Tiles[idx], "Models/cube.obj", eRigidBody2DType::STATIC, Vector(0.5f, 0.5f, 0.5f), Color(0.f, 0.f, 1.5f)));
 				break;
 
 			case eTileType::STATICGROUND:
+				gameMgrCmp->LevelEntities.PushBack(CreateTileObject("Static Ground", world, Vector(posW, -posH, 0.f), level->Tiles[idx], "Models/cube.obj",
+					level->Tiles[idx] == eTileType::STATICGROUND ? eRigidBody2DType::STATIC : eRigidBody2DType::DYNAMIC,
+					level->Tiles[idx] == eTileType::STATICGROUND ? Vector(0.5f, 0.5f, 0.5f) : Vector(0.4f, 0.4f, 0.4f),
+					level->Tiles[idx] == eTileType::STATICGROUND ? Color(0.05f, 0.f, 0.125f) : Color(0.5f, 0.5f, 0.5f)));
+				break;
+
 			case eTileType::RIGIDBODYGROUND:
-				gameMgrCmp->LevelEntities.PushBack(CreateTileObject(world, Vector(posW, -posH, 0.f), level->Tiles[idx], "Models/cube.obj",
+				gameMgrCmp->LevelEntities.PushBack(CreateTileObject("Rigidbody Ground", world, Vector(posW, -posH, 0.f), level->Tiles[idx], "Models/cube.obj",
 					level->Tiles[idx] == eTileType::STATICGROUND ? eRigidBody2DType::STATIC : eRigidBody2DType::DYNAMIC,
 					level->Tiles[idx] == eTileType::STATICGROUND ? Vector(0.5f, 0.5f, 0.5f) : Vector(0.4f, 0.4f, 0.4f),
 					level->Tiles[idx] == eTileType::STATICGROUND ? Color(0.05f, 0.f, 0.125f) : Color(0.5f, 0.5f, 0.5f)));
@@ -265,11 +273,11 @@ void SGJ::GameManagerSystem::SpawnLevel(Poly::Scene* world, size_t idx)
 			case eTileType::SPIKESTOP:
 			case eTileType::SPIKESLEFT:
 			case eTileType::SPIKESRIGHT:
-				gameMgrCmp->LevelEntities.PushBack(CreateTileObject(world, Vector(posW, -posH, 0.f), level->Tiles[idx], "Models/spikes.obj", eRigidBody2DType::STATIC, Vector(0.4f, 0.4f, 0.25f), Color(1.2f, 0.f, 0.f)));
+				gameMgrCmp->LevelEntities.PushBack(CreateTileObject("Spikes", world, Vector(posW, -posH, 0.f), level->Tiles[idx], "Models/spikes.obj", eRigidBody2DType::STATIC, Vector(0.4f, 0.4f, 0.25f), Color(1.2f, 0.f, 0.f)));
 				break;
 
 			default:
-				gameMgrCmp->LevelEntities.PushBack(CreateTileObject(world, Vector(posW, -posH, 0.f), level->Tiles[idx], "Models/cube.obj", eRigidBody2DType::STATIC, Vector(0.5f, 0.5f, 0.5f), Color(0.25f, 0, 0.125f), false));
+				gameMgrCmp->LevelEntities.PushBack(CreateTileObject("Default", world, Vector(posW, -posH, 0.f), level->Tiles[idx], "Models/cube.obj", eRigidBody2DType::STATIC, Vector(0.5f, 0.5f, 0.5f), Color(0.25f, 0, 0.125f), false));
 				break;
 			}
 		}

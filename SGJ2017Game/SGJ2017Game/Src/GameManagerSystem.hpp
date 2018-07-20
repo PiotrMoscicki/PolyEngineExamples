@@ -20,7 +20,7 @@ namespace SGJ
 	{
 		void Update(Poly::Scene*);
 
-		Poly::Entity* CreateTileObject(Poly::Scene* world, const Poly::Vector& position, eTileType tileType, Poly::String meshSource, Poly::eRigidBody2DType physicsPropertie, const Poly::Vector& size, const Poly::Color& color, bool colliding);
+		Poly::Entity* CreateTileObject(const Poly::String& name, Poly::Scene* world, const Poly::Vector& position, eTileType tileType, Poly::String meshSource, Poly::eRigidBody2DType physicsPropertie, const Poly::Vector& size, const Poly::Color& color, bool colliding);
 		Poly::Entity* SpawnPlayer(Poly::Scene* world, const Poly::Vector& position);
 
 		void LoadLevel(Poly::Scene* world, const Poly::String& path);
