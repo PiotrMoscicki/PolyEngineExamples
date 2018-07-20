@@ -24,7 +24,7 @@ namespace GameManagerSystem
 	void CreatePointLights(Scene* world, int quota);
 	Entity* CreatePointLight(Scene* world, Vector& position, float Range);
 	void CreateSpotLight(Scene* world, float Range);
-	void SpawnParticles(Scene* world);
+	void CreateParticles(Scene* world);
 	void SpawnSpritesSheets(Scene* world);
 	void SpawnShaderball(Scene* world);
 

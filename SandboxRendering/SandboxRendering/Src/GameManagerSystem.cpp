@@ -20,52 +20,50 @@
 
 using namespace Poly;
 
-void GameManagerSystem::CreateScene(Scene* world)
+void GameManagerSystem::CreateScene(Scene* scene)
 {
 	gConsole.LogInfo("GameManagerSystem::CreateScene");
 
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();	
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();	
 
 	srand(42);
 	
-	CreateCamera(world);
+	CreateCamera(scene);
 
-	// gameMgrCmp->GameEntities.PushBack(Ground = CreateModel(world, "Models/Ground/Ground.fbx"));
+	// gameMgrCmp->GameEntities.PushBack(Ground = CreateModel(scene, "Models/Ground/Ground.fbx"));
 
-	DeferredTaskSystem::AddWorldComponentImmediate<SkyboxWorldComponent>(world, "HDR/HDR.hdr", eResourceSource::GAME);
+	DeferredTaskSystem::AddWorldComponentImmediate<SkyboxWorldComponent>(scene, "HDR/HDR.hdr", eResourceSource::GAME);
 	
-	gameMgrCmp->Model = CreateModel(world, "Models/leather_shoes/Leather_Shoes.obj");
-	gameMgrCmp->Model->GetTransform().SetGlobalTranslation(Vector(500.0f, 0.0f, 0.0f));
+	// gameMgrCmp->Model = CreateModel(scene, "Models/leather_shoes/Leather_Shoes.obj");
+	// gameMgrCmp->Model->GetTransform().SetGlobalTranslation(Vector(500.0f, 0.0f, 0.0f));
 
-	// gameMgrCmp->Model = CreateModel(world, "Models/kv-2-heavy-tank-1940/model.obj");
+	// gameMgrCmp->Model = CreateModel(scene, "Models/kv-2-heavy-tank-1940/model.obj");
 	// gameMgrCmp->Model->GetTransform().SetGlobalScale(Vector(5.0f, 5.0f, 5.0f));
 	// gameMgrCmp->Model->GetTransform().SetGlobalTranslation(Vector(0.0f, 10.0f, 0.0f));
 
-	// gameMgrCmp->Model = CreateModel(world, "Models/1972-datsun-240k-gt/model.obj");
+	// gameMgrCmp->Model = CreateModel(scene, "Models/1972-datsun-240k-gt/model.obj");
 	// gameMgrCmp->Model->GetTransform().SetGlobalScale(Vector::ONE * 20.0f);
 
-	// gameMgrCmp->Model = CreateModel(world, "Models/leather_shoes/Leather_Shoes.obj");
+	CreatePBRShpereGrid(scene, Vector(0.0f, 0.0f, 0.0f), Color(0.0f, 0.0f, 0.0f, 1.0f));
+	CreatePBRShpereGrid(scene, Vector(-300.0f, 0.0f, 0.0f), Color(0.5f, 0.5f, 0.5f, 1.0f));
+	CreatePBRShpereGrid(scene, Vector(-600.0f, 0.0f, 0.0f), Color(1.0f, 1.0f, 1.0f, 1.0f));
 
-	CreatePBRShpereGrid(world, Vector(0.0f, 0.0f, 0.0f), Color(0.0f, 0.0f, 0.0f, 1.0f));
-	CreatePBRShpereGrid(world, Vector(-300.0f, 0.0f, 0.0f), Color(0.5f, 0.5f, 0.5f, 1.0f));
-	CreatePBRShpereGrid(world, Vector(-600.0f, 0.0f, 0.0f), Color(1.0f, 1.0f, 1.0f, 1.0f));
+	// CreateSponza(scene);
 
-	CreateSponza(world);
+	CreateTextUI(scene);
 
-	CreateTextUI(world);
+	// CreateTranslucent(scene);
 
-	// CreateTranslucent(world);
+	CreatePointLights(scene, 128);
 
-	CreatePointLights(world, 128);
-
-	// SpawnParticles(world);
+	CreateParticles(scene);
 }
 
-void GameManagerSystem::CreateTextUI(Scene* world)
+void GameManagerSystem::CreateTextUI(Scene* scene)
 {
-	Entity* text = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* text = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	DeferredTaskSystem::AddComponentImmediate<ScreenSpaceTextComponent>(
-		world,
+		scene,
 		text,
 		Vector2i(50, 50),
 		"Fonts/Raleway/Raleway-Regular.ttf",
@@ -75,64 +73,68 @@ void GameManagerSystem::CreateTextUI(Scene* world)
 	);
 }
 
-Entity* GameManagerSystem::CreateModel(Scene* world, String path)
+Entity* GameManagerSystem::CreateModel(Scene* scene, String path)
 {
-	Entity* model = DeferredTaskSystem::SpawnEntityImmediate(world);
-	DeferredTaskSystem::AddComponentImmediate<DebugDrawableComponent>(world, model, eDebugDrawPreset::STATIC);
-	DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(world, model, path, eResourceSource::GAME);
+	Entity* model = DeferredTaskSystem::SpawnEntityImmediate(scene);
+	DeferredTaskSystem::AddComponentImmediate<DebugDrawableComponent>(scene, model, eDebugDrawPreset::STATIC);
+	DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(scene, model, path, eResourceSource::GAME);
 	return model;
 }
 
-void GameManagerSystem::CreateCamera(Scene* world)
+void GameManagerSystem::CreateCamera(Scene* scene)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* camera = DeferredTaskSystem::SpawnEntityImmediate(world);
-	DeferredTaskSystem::AddComponentImmediate<CameraComponent>(world, camera, 35_deg, 1.0f, 5000.f);
-	DeferredTaskSystem::AddComponentImmediate<FreeFloatMovementComponent>(world, camera, 100.0f, 0.003f, 10.0f);
-	gameMgrCmp->PostCmp = DeferredTaskSystem::AddComponentImmediate<PostprocessSettingsComponent>(world, camera);
-	gameMgrCmp->PostCmp->Exposure = 3.0f;
+	Entity* camera = DeferredTaskSystem::SpawnEntityImmediate(scene);
+	DeferredTaskSystem::AddComponentImmediate<CameraComponent>(scene, camera, 35_deg, 1.0f, 5000.f);
+	DeferredTaskSystem::AddComponentImmediate<FreeFloatMovementComponent>(scene, camera, 100.0f, 0.003f, 10.0f);
+	gameMgrCmp->PostCmp = DeferredTaskSystem::AddComponentImmediate<PostprocessSettingsComponent>(scene, camera);
+	gameMgrCmp->PostCmp->Exposure = 1.0f;
+	gameMgrCmp->PostCmp->DOFSize = 1.0f;
+	gameMgrCmp->PostCmp->DOFPoint = 300.0f;
+	gameMgrCmp->PostCmp->DOFRange = 200.0f;
+	// gameMgrCmp->PostCmp->DOFShow = 1.0f;
+	gameMgrCmp->PostCmp->BloomScale = 1.0f;
 
 	EntityTransform& cameraTrans = camera->GetTransform();
 	cameraTrans.SetGlobalTranslation(Vector(-550.0f, 180.0f, 0.0f));
 	cameraTrans.SetGlobalRotation(Quaternion(Vector::UNIT_Y, -90.0_deg) * Quaternion(Vector::UNIT_X, -10.0_deg));
 	// cameraTrans.SetGlobalRotation(Quaternion(Matrix(cameraTrans.GetGlobalTranslation(), Vector(0.0f, 0.0f, 0.0f))));
-	world->GetWorldComponent<ViewportWorldComponent>()->SetCamera(0, world->GetComponent<CameraComponent>(camera));
+	scene->GetWorldComponent<ViewportWorldComponent>()->SetCamera(0, scene->GetComponent<CameraComponent>(camera));
 	gameMgrCmp->Camera = camera;
 
-	Entity* keyDirLight = DeferredTaskSystem::SpawnEntityImmediate(world);
-	DeferredTaskSystem::AddComponentImmediate<DirectionalLightComponent>(world, keyDirLight, Color(1.0f, 1.0f, 1.0f), 5.0f);
-	keyDirLight->GetTransform().SetGlobalRotation(Quaternion(Vector::UNIT_Y, -45_deg) * Quaternion(Vector::UNIT_X, 65_deg));
-	gameMgrCmp->GameEntities.PushBack(keyDirLight);
-	
+	// Entity* keyDirLight = DeferredTaskSystem::SpawnEntityImmediate(scene);
+	// DeferredTaskSystem::AddComponentImmediate<DirectionalLightComponent>(scene, keyDirLight, Color(1.0f, 1.0f, 1.0f), 5.0f);
+	// keyDirLight->GetTransform().SetGlobalRotation(Quaternion(Vector::UNIT_Y, -45_deg) * Quaternion(Vector::UNIT_X, 65_deg));
+	// gameMgrCmp->GameEntities.PushBack(keyDirLight);
 }
 
-void GameManagerSystem::CreatePBRShpereGrid(Scene* world, Vector pos, Color albedo)
+void GameManagerSystem::CreatePBRShpereGrid(Scene* scene, Vector pos, Color albedo)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	// Entity* camera = DeferredTaskSystem::SpawnEntityImmediate(world);
-	// DeferredTaskSystem::AddComponentImmediate<CameraComponent>(world, camera, 50_deg, 1.0f, 5000.f);
-	// DeferredTaskSystem::AddComponentImmediate<FreeFloatMovementComponent>(world, camera, 10.0f, 0.003f);
-	// DeferredTaskSystem::AddComponentImmediate<PostprocessSettingsComponent>(world, camera);
+	// Entity* camera = DeferredTaskSystem::SpawnEntityImmediate(scene);
+	// DeferredTaskSystem::AddComponentImmediate<CameraComponent>(scene, camera, 50_deg, 1.0f, 5000.f);
+	// DeferredTaskSystem::AddComponentImmediate<FreeFloatMovementComponent>(scene, camera, 10.0f, 0.003f);
+	// DeferredTaskSystem::AddComponentImmediate<PostprocessSettingsComponent>(scene, camera);
 	// EntityTransform& cameraTrans = camera->GetTransform();
 	// cameraTrans.SetGlobalTranslation(Vector(800.0f, 180.0f, 0.0f));
 	// cameraTrans.SetGlobalRotation(Quaternion(Vector::UNIT_Y, 90.0_deg));
-	// world->GetWorldComponent<ViewportWorldComponent>()->SetCamera(0, world->GetComponent<CameraComponent>(camera));
+	// scene->GetWorldComponent<ViewportWorldComponent>()->SetCamera(0, scene->GetComponent<CameraComponent>(camera));
 
-	// Entity* keyDirLight = DeferredTaskSystem::SpawnEntityImmediate(world);
-	// DeferredTaskSystem::AddComponentImmediate<DirectionalLightComponent>(world, keyDirLight, Color(1.0f, 1.0f, 1.0f), 1.0f);
+	// Entity* keyDirLight = DeferredTaskSystem::SpawnEntityImmediate(scene);
+	// DeferredTaskSystem::AddComponentImmediate<DirectionalLightComponent>(scene, keyDirLight, Color(1.0f, 1.0f, 1.0f), 1.0f);
 	// keyDirLight->GetTransform().SetGlobalRotation(Quaternion(Vector::UNIT_Y, -45_deg) * Quaternion(Vector::UNIT_X, 65_deg));
 	// gameMgrCmp->GameEntities.PushBack(keyDirLight);
-	// Entity* fillDirLight = DeferredTaskSystem::SpawnEntityImmediate(world);
-	// DeferredTaskSystem::AddComponentImmediate<DirectionalLightComponent>(world, fillDirLight, Color(0.75f, 0.95f, 1.0f), 0.1f);
+	// Entity* fillDirLight = DeferredTaskSystem::SpawnEntityImmediate(scene);
+	// DeferredTaskSystem::AddComponentImmediate<DirectionalLightComponent>(scene, fillDirLight, Color(0.75f, 0.95f, 1.0f), 0.1f);
 	// fillDirLight->GetTransform().SetGlobalRotation(Quaternion(Vector::UNIT_Y, -45_deg + 180_deg) * Quaternion(Vector::UNIT_X, 65_deg + 180_deg));
 	// gameMgrCmp->GameEntities.PushBack(fillDirLight);
 
-	// Entity* ground = DeferredTaskSystem::SpawnEntityImmediate(world);
+	// Entity* ground = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	// EntityTransform& groundTrans = ground->GetTransform();
 	// groundTrans.SetGlobalTranslation(Vector(0.0f, 0.0f, 0.0f));	
-	// MeshRenderingComponent* meshCmp = DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(world, ground, "Models/Ground/Ground.fbx", eResourceSource::GAME);
+	// MeshRenderingComponent* meshCmp = DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(scene, ground, "Models/Ground/Ground.fbx", eResourceSource::GAME);
 	// meshCmp->SetShadingModel(eShadingModel::PBR);
 	// int materialsNum = meshCmp->GetMesh()->GetSubMeshes().GetSize();
 	// for (int i = 0; i < materialsNum; ++i)
@@ -145,24 +147,26 @@ void GameManagerSystem::CreatePBRShpereGrid(Scene* world, Vector pos, Color albe
 	{
 		for (int y = 0; y < 5; ++y)
 		{
-			Entity* sphere = DeferredTaskSystem::SpawnEntityImmediate(world);
+			Entity* sphere = DeferredTaskSystem::SpawnEntityImmediate(scene);
 			EntityTransform& sphereTrans = sphere->GetTransform();
 			sphereTrans.SetGlobalTranslation(pos + Vector(50.0f * y, 0.0f, 50.0f * z) - (Vector(50.0f * 5.0f, -100.0f, 50.0f * 5.0f) * 0.5f));
 			sphereTrans.SetLocalScale(Vector(1.0f, 1.0f, 1.0f) * 20.0f);
 			sphereTrans.SetLocalRotation(Quaternion(Vector::UNIT_Z, 90.0_deg));
-			MeshRenderingComponent* meshCmp = DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(world, sphere, "Models/Primitives/Sphere_HighPoly.obj", eResourceSource::GAME);
+			// MeshRenderingComponent* meshCmp = DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(scene, sphere, "Models/Primitives/Sphere_HighPoly.obj", eResourceSource::GAME);
+			MeshRenderingComponent* meshCmp = DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(scene, sphere, "Models/Primitives/Sphere_LowPoly.obj", eResourceSource::GAME);
 			size_t materialsNum = meshCmp->GetMesh()->GetSubMeshes().GetSize();
 			for (size_t i = 0; i < materialsNum; ++i)
 			{
 				float Roughness	= ((0.01f + z) / 5.0f);
 				float Metallic	= ((0.01f + y) / 5.0f);
 				meshCmp->SetMaterial(i, Material(
-					Color(0.0f, 0.0f, 0.0f, 0.0f),
+					Color(0.0f, 0.0f, 0.0f, 1.0f),
 					albedo,
 					Roughness,
 					Metallic,
 					0.5f
 				));
+				meshCmp->SetBlendingMode(eBlendingMode::OPAUQE);
 			}
 
 			gameMgrCmp->GameEntities.PushBack(sphere);
@@ -170,117 +174,118 @@ void GameManagerSystem::CreatePBRShpereGrid(Scene* world, Vector pos, Color albe
 	}
 }
 
-void GameManagerSystem::CreateTranslucent(Scene* world)
+void GameManagerSystem::CreateTranslucent(Scene* scene)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
 	Material material(
-		Color(0.01f, 0.01f, 0.01f, 1.0f),
-		Color(1.0f, 0.5f, 0.5f, 0.75f),
-		1.0f,
+		Color(0.0f, 0.0f, 0.0f, 1.0f),
+		Color(1.0f, 1.0f, 1.0f, 0.5f),
+		0.1f,
 		1.0f,
 		0.5f
 	);
 
 	for (int i = 0; i < 8; ++i)
 	{
-		Entity* translucent = DeferredTaskSystem::SpawnEntityImmediate(world);
+		Entity* translucent = DeferredTaskSystem::SpawnEntityImmediate(scene);
 		EntityTransform& translucentTrans = translucent->GetTransform();
 		Vector randomOffset = RandomVectorRange(-1.0f, 1.0f) * 200.0f;
 		translucentTrans.SetGlobalTranslation(Vector(0.0f, 200.0f, 0.0f) + randomOffset);
 		translucentTrans.SetLocalScale(Vector(100.0f, 100.0f, 100.0f));
-		MeshRenderingComponent* meshCmp = DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(world, translucent, "Models/Primitives/Sphere_HighPoly.obj", eResourceSource::GAME);
+		MeshRenderingComponent* meshCmp = DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(scene, translucent, "Models/Primitives/Sphere_HighPoly.obj", eResourceSource::GAME);
 		size_t materialsNum = meshCmp->GetMesh()->GetSubMeshes().GetSize();
 		for (size_t i = 0; i < materialsNum; ++i)
 		{
 			meshCmp->SetMaterial(i, material);
+			meshCmp->SetBlendingMode(eBlendingMode::TRANSLUCENT);
 		}
 
 		gameMgrCmp->GameEntities.PushBack(translucent);
 	}
 }
 
-void GameManagerSystem::CreateSponza(Scene* world)
+void GameManagerSystem::CreateSponza(Scene* scene)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	// Entity* camera = DeferredTaskSystem::SpawnEntityImmediate(world);
-	// CameraComponent* cameraCmp = DeferredTaskSystem::AddComponentImmediate<CameraComponent>(world, camera, 50_deg, 1.0f, 5000.f);
+	// Entity* camera = DeferredTaskSystem::SpawnEntityImmediate(scene);
+	// CameraComponent* cameraCmp = DeferredTaskSystem::AddComponentImmediate<CameraComponent>(scene, camera, 50_deg, 1.0f, 5000.f);
 	// cameraCmp->SetRenderingMode(eRenderingModeType::IMMEDIATE_DEBUG);
-	// DeferredTaskSystem::AddComponentImmediate<FreeFloatMovementComponent>(world, camera, 10.0f, 0.003f);
+	// DeferredTaskSystem::AddComponentImmediate<FreeFloatMovementComponent>(scene, camera, 10.0f, 0.003f);
 	// EntityTransform& cameraTrans = camera->GetTransform();
 	// cameraTrans.SetGlobalTranslation(Vector(800.0f, 180.0f, 0.0f));
 	// cameraTrans.SetGlobalRotation(Quaternion(Vector::UNIT_Y, 90.0_deg));
-	// world->GetWorldComponent<ViewportWorldComponent>()->SetCamera(0, world->GetComponent<CameraComponent>(camera));
+	// scene->GetWorldComponent<ViewportWorldComponent>()->SetCamera(0, scene->GetComponent<CameraComponent>(camera));
 
-	// Entity* keyDirLight = DeferredTaskSystem::SpawnEntityImmediate(world);
-	// DeferredTaskSystem::AddComponentImmediate<DirectionalLightComponent>(world, keyDirLight, Color(0.1f, 0.095f, 0.075f), 1.0f);
+	// Entity* keyDirLight = DeferredTaskSystem::SpawnEntityImmediate(scene);
+	// DeferredTaskSystem::AddComponentImmediate<DirectionalLightComponent>(scene, keyDirLight, Color(0.1f, 0.095f, 0.075f), 1.0f);
 	// EntityTransform& dirLightTrans = keyDirLight->GetTransform();
 	// dirLightTrans.SetLocalRotation(Quaternion(Vector::UNIT_Y, -45_deg) * Quaternion(Vector::UNIT_X, 65_deg));
 	// gameMgrCmp->GameEntities.PushBack(keyDirLight);
 
-	Entity* sponza = DeferredTaskSystem::SpawnEntityImmediate(world);
-	DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(world, sponza, "Models/Sponza/sponza.obj", eResourceSource::GAME);
+	Entity* sponza = DeferredTaskSystem::SpawnEntityImmediate(scene);
+	DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(scene, sponza, "Models/Sponza/sponza.obj", eResourceSource::GAME);
 
 	gameMgrCmp->GameEntities.PushBack(sponza);
 }
 
-void GameManagerSystem::CreateSponzaSample(Scene* world)
+void GameManagerSystem::CreateSponzaSample(Scene* scene)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* camera = DeferredTaskSystem::SpawnEntityImmediate(world);
-	DeferredTaskSystem::AddComponentImmediate<CameraComponent>(world, camera, 40_deg, 1.0f, 5000.f);
-	DeferredTaskSystem::AddComponentImmediate<FreeFloatMovementComponent>(world, camera, 10.0f, 0.003f);
+	Entity* camera = DeferredTaskSystem::SpawnEntityImmediate(scene);
+	DeferredTaskSystem::AddComponentImmediate<CameraComponent>(scene, camera, 40_deg, 1.0f, 5000.f);
+	DeferredTaskSystem::AddComponentImmediate<FreeFloatMovementComponent>(scene, camera, 10.0f, 0.003f);
 	EntityTransform& cameraTrans = camera->GetTransform();
 	cameraTrans.SetGlobalTranslation(Vector(300.0f, 0.0f, 0.0f));
 	cameraTrans.SetGlobalRotation(Quaternion(Vector::UNIT_Y, 90.0_deg));
 
-	world->GetWorldComponent<ViewportWorldComponent>()->SetCamera(0, world->GetComponent<CameraComponent>(camera));
+	scene->GetWorldComponent<ViewportWorldComponent>()->SetCamera(0, scene->GetComponent<CameraComponent>(camera));
 
-	Entity* sponza = DeferredTaskSystem::SpawnEntityImmediate(world);
-	DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(world, sponza, "Models/Sponza/sponza_lion.obj", eResourceSource::GAME);
+	Entity* sponza = DeferredTaskSystem::SpawnEntityImmediate(scene);
+	DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(scene, sponza, "Models/Sponza/sponza_lion.obj", eResourceSource::GAME);
 	gameMgrCmp->GameEntities.PushBack(sponza);
 
 	Vector lightPosition = Vector(50.0f, 0.0f, 50.0f);
-	Entity* lightEntity = CreatePointLight(world, lightPosition, 100.0f);
+	Entity* lightEntity = CreatePointLight(scene, lightPosition, 100.0f);
 	gameMgrCmp->LightsStartPositions.PushBack(lightPosition);
 	gameMgrCmp->PointLightEntities.PushBack(lightEntity);
 }
 
-void GameManagerSystem::Update(Scene* world)
+void GameManagerSystem::Update(Scene* scene)
 {
-	UpdateParticles(world);
+	UpdateParticles(scene);
 
-	UpdateLights(world);
+	UpdateLights(scene);
 
-	// UpdateModel(world);
+	// UpdateModel(scene);
 
 	Vector offset = Vector(800.0f, 0.0f, 0.0f);
-	DebugDrawSystem::DrawLine(world, offset, offset + Vector::UNIT_Y * 1000.0f, Color::RED);
-	DebugDrawSystem::DrawBox(world, offset + Vector(-100.0f, 0.0f, -100.0f), offset + Vector(100.0f, 200.0f, 100.0f), Color::RED);
+	DebugDrawSystem::DrawLine(scene, offset, offset + Vector::UNIT_Y * 1000.0f, Color::RED);
+	DebugDrawSystem::DrawBox(scene, offset + Vector(-100.0f, 0.0f, -100.0f), offset + Vector(100.0f, 200.0f, 100.0f), Color::RED);
 
-	// UpdatePostProcess(world);
+	// UpdatePostProcess(scene);
 }
 
-void GameManagerSystem::UpdatePostProcess(Scene* world)
+void GameManagerSystem::UpdatePostProcess(Scene* scene)
 {
-	float time = (float)(world->GetWorldComponent<TimeWorldComponent>()->GetGameplayTime());
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	float time = (float)(scene->GetWorldComponent<TimeWorldComponent>()->GetGameplayTime());
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 	time *= 0.1f;
 	float exposure = 0.25f * floor(10.0f*4.0f * (time - floor(time)));
 	gameMgrCmp->PostCmp->Exposure = exposure;
 	gConsole.LogInfo("GameManagerSystem::Update exposure: {}", gameMgrCmp->PostCmp->Exposure);
 }
 
-void GameManagerSystem::Deinit(Scene* world)
+void GameManagerSystem::Deinit(Scene* scene)
 {
 	gConsole.LogInfo("GameManagerSystem::Cleanup");
 }
 
-void GameManagerSystem::CreatePointLights(Scene* world, int quota)
+void GameManagerSystem::CreatePointLights(Scene* scene, int quota)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
 	gameMgrCmp->LightsStartPositions.Reserve(quota);
 
@@ -289,7 +294,7 @@ void GameManagerSystem::CreatePointLights(Scene* world, int quota)
 		Vector position = Vector(RandomRange(-1.0f, 1.0f)*1000.0f, RandomRange(0.0f, 800.0f), RandomRange(-1.0f, 1.0f)*500.0f);
 		float rangeRnd = pow(RandomRange(0.0f, 1.0f), 8.0f);
 		float range = 100.0f + rangeRnd * 2000.0f;
-		Entity* lightEntity = CreatePointLight(world, position, range);
+		Entity* lightEntity = CreatePointLight(scene, position, range);
 
 		gameMgrCmp->LightsStartPositions.PushBack(position);
 		gameMgrCmp->PointLightEntities.PushBack(lightEntity);
@@ -304,10 +309,10 @@ void GameManagerSystem::CreatePointLights(Scene* world, int quota)
 	}
 }
 
-void GameManagerSystem::UpdateLights(Scene* world)
+void GameManagerSystem::UpdateLights(Scene* scene)
 {
-	float time = (float)(world->GetWorldComponent<TimeWorldComponent>()->GetGameplayTime());
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	float time = (float)(scene->GetWorldComponent<TimeWorldComponent>()->GetGameplayTime());
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
 	for (size_t i = 0; i < gameMgrCmp->LightsStartPositions.GetSize(); ++i)
 	{
@@ -319,10 +324,10 @@ void GameManagerSystem::UpdateLights(Scene* world)
 	}
 }
 
-void GameManagerSystem::UpdateModel(Scene* world)
+void GameManagerSystem::UpdateModel(Scene* scene)
 {
-	float time = (float)(world->GetWorldComponent<TimeWorldComponent>()->GetGameplayTime());
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	float time = (float)(scene->GetWorldComponent<TimeWorldComponent>()->GetGameplayTime());
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 	if (gameMgrCmp->Model)
 	{
 		EntityTransform& modelTrans = gameMgrCmp->Model->GetTransform();
@@ -330,13 +335,13 @@ void GameManagerSystem::UpdateModel(Scene* world)
 	}
 }
 
-Entity* GameManagerSystem::CreatePointLight(Scene* world, Vector& position, float Range)
+Entity* GameManagerSystem::CreatePointLight(Scene* scene, Vector& position, float Range)
 {
 	Color lightColor = Color(RandomRange(0.0f, 1.0f), RandomRange(0.0f, 1.0f), RandomRange(0.0f, 1.0f));
 
-	Entity* pointLight = DeferredTaskSystem::SpawnEntityImmediate(world);
-	PointLightComponent* pointLightCmp = DeferredTaskSystem::AddComponentImmediate<PointLightComponent>(world, pointLight, lightColor, 100.0f * 1000.0f, Range);
-	MeshRenderingComponent* meshCmp = DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(world, pointLight, "Models/Primitives/Sphere_LowPoly.obj", eResourceSource::GAME);
+	Entity* pointLight = DeferredTaskSystem::SpawnEntityImmediate(scene);
+	PointLightComponent* pointLightCmp = DeferredTaskSystem::AddComponentImmediate<PointLightComponent>(scene, pointLight, lightColor, 100.0f * 1000.0f, Range);
+	MeshRenderingComponent* meshCmp = DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(scene, pointLight, "Models/Primitives/Sphere_LowPoly.obj", eResourceSource::GAME);
 	meshCmp->SetMaterial(0, Material(Color(0.0f, 0.0f, 0.0f, 0.0f), lightColor, 0.0f, 1.0f, 0.5f));
 	EntityTransform& pointLightTrans = pointLight->GetTransform();
 	pointLightTrans.SetGlobalScale(Vector::ONE * 5.0f);
@@ -345,21 +350,21 @@ Entity* GameManagerSystem::CreatePointLight(Scene* world, Vector& position, floa
 	return pointLight;
 }
 
-void GameManagerSystem::CreateSpotLight(Scene* world, float Range)
+void GameManagerSystem::CreateSpotLight(Scene* scene, float Range)
 {
 	Vector spotLightPos = Vector(50.0f, 50.0f, 0.0f);
 	Color lightColor = Color(1.0f, 0.5f, 0.0f) + Color(RandomRange(0.0f, 1.0f), RandomRange(0.0f, 0.5f), RandomRange(0.0f, 0.2f));
 	Quaternion spotLightRot = Quaternion(Vector::UNIT_Y, -45_deg) * Quaternion(Vector::UNIT_X, -35_deg);
 	// float pointLightRange = 100.0f;
-	Entity* spotLight = DeferredTaskSystem::SpawnEntityImmediate(world);
-	DeferredTaskSystem::AddComponentImmediate<SpotLightComponent>(world, spotLight, lightColor, 1.0f, Range, 5.0f, 17.0f);
+	Entity* spotLight = DeferredTaskSystem::SpawnEntityImmediate(scene);
+	DeferredTaskSystem::AddComponentImmediate<SpotLightComponent>(scene, spotLight, lightColor, 1.0f, Range, 5.0f, 17.0f);
 	EntityTransform& spotLightTrans = spotLight->GetTransform();
 	spotLightTrans.SetLocalTranslation(spotLightPos);
 	spotLightTrans.SetLocalRotation(spotLightRot);
 
-	Entity* spotLightDebugSource = DeferredTaskSystem::SpawnEntityImmediate(world);
-	DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(world, spotLightDebugSource, "Models/Primitives/Sphere_LowPoly.obj", eResourceSource::GAME);
-	MeshRenderingComponent* spotLightMesh = world->GetComponent<MeshRenderingComponent>(spotLightDebugSource);
+	Entity* spotLightDebugSource = DeferredTaskSystem::SpawnEntityImmediate(scene);
+	DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(scene, spotLightDebugSource, "Models/Primitives/Sphere_LowPoly.obj", eResourceSource::GAME);
+	MeshRenderingComponent* spotLightMesh = scene->GetComponent<MeshRenderingComponent>(spotLightDebugSource);
 	spotLightMesh->SetMaterial(0, Material(lightColor, lightColor, 1.0f, 1.0f, 0.5f));
 	EntityTransform& spotLightDebugSourceTrans = spotLightDebugSource->GetTransform();
 	spotLightDebugSource->SetParent(spotLight);
@@ -367,12 +372,12 @@ void GameManagerSystem::CreateSpotLight(Scene* world, float Range)
 	spotLightDebugSourceTrans.SetLocalTranslation(Vector(0.0f, 0.0f, 0.0f));
 }
 
-void GameManagerSystem::UpdateParticles(Scene* world)
+void GameManagerSystem::UpdateParticles(Scene* scene)
 {
-	float time = (float)(world->GetWorldComponent<TimeWorldComponent>()->GetGameplayTime());
-	// float deltaTime = (float)(TimeSystem::GetTimerDeltaTime(world, Poly::eEngineTimer::GAMEPLAY));
+	float time = (float)(scene->GetWorldComponent<TimeWorldComponent>()->GetGameplayTime());
+	// float deltaTime = (float)(TimeSystem::GetTimerDeltaTime(scene, Poly::eEngineTimer::GAMEPLAY));
 
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
 	Vector translation = Vector::UNIT_Y * (0.2f*Abs(Sin(1.0_rad*3.1415f *time + 0.5_rad)));
 	Vector scale = Vector::ONE * (1.0f + 0.1f*(0.5f + 0.5f*Sin(2.0_rad*3.1415f *time + 0.5_rad)));
@@ -414,40 +419,40 @@ void GameManagerSystem::UpdateParticles(Scene* world)
 	}
 }
 
-void GameManagerSystem::SpawnParticles(Scene* world)
+void GameManagerSystem::CreateParticles(Scene* scene)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 	Vector particlesPosition = Vector(0.0f, 0.0f, 0.0f);
-	gameMgrCmp->particleDefault = SpawnEmitterDefault(world, particlesPosition);
-	gameMgrCmp->particleWorldSpace = SpawnEmitterWorldSpace(world, particlesPosition);
-	gameMgrCmp->particleLocalSpace = SpawnEmitterLocalSpace(world, particlesPosition);
-	gameMgrCmp->particleAmbient = SpawnEmitterAmbient(world, particlesPosition);
-	gameMgrCmp->particleAmbientWind = SpawnEmitterAmbientWind(world, particlesPosition);
+	// gameMgrCmp->particleDefault = SpawnEmitterDefault(scene, particlesPosition);
+	gameMgrCmp->particleWorldSpace = SpawnEmitterWorldSpace(scene, particlesPosition);
+	gameMgrCmp->particleLocalSpace = SpawnEmitterLocalSpace(scene, particlesPosition);
+	gameMgrCmp->particleAmbient = SpawnEmitterAmbient(scene, particlesPosition);
+	gameMgrCmp->particleAmbientWind = SpawnEmitterAmbientWind(scene, particlesPosition);
 
-	// SpawnHeartSystem(world);
+	// SpawnHeartSystem(scene);
 }
 
-void GameManagerSystem::SpawnSpritesSheets(Scene* world)
+void GameManagerSystem::SpawnSpritesSheets(Scene* scene)
 {
 	Vector spritesheetsPosition = Vector(-15.0f, 0.0f, 0.0f);
-	SpawnSpritesheet11(world, spritesheetsPosition + Vector(-5.0f, 4.0f, 0.0f));
-	SpawnSpritesheet22(world, spritesheetsPosition + Vector(0.0f, 4.0f, 0.0f));
-	SpawnSpritesheet44(world, spritesheetsPosition + Vector(5.0f, 4.0f, 0.0f));
-	SpawnSpritesheet42(world, spritesheetsPosition + Vector(-5.0f, 8.0f, 0.0f));
-	SpawnSpritesheet41(world, spritesheetsPosition + Vector(0.0f, 8.0f, 0.0f));
-	SpawnSpritesheet44Random(world, spritesheetsPosition + Vector(5.0f, 8.0f, 0.0f));
-	SpawnSpritesheetGandalf(world, spritesheetsPosition + Vector(0.0f, 12.0f, 0.0f));
+	SpawnSpritesheet11(scene, spritesheetsPosition + Vector(-5.0f, 4.0f, 0.0f));
+	SpawnSpritesheet22(scene, spritesheetsPosition + Vector(0.0f, 4.0f, 0.0f));
+	SpawnSpritesheet44(scene, spritesheetsPosition + Vector(5.0f, 4.0f, 0.0f));
+	SpawnSpritesheet42(scene, spritesheetsPosition + Vector(-5.0f, 8.0f, 0.0f));
+	SpawnSpritesheet41(scene, spritesheetsPosition + Vector(0.0f, 8.0f, 0.0f));
+	SpawnSpritesheet44Random(scene, spritesheetsPosition + Vector(5.0f, 8.0f, 0.0f));
+	SpawnSpritesheetGandalf(scene, spritesheetsPosition + Vector(0.0f, 12.0f, 0.0f));
 }
 
-void GameManagerSystem::SpawnShaderball(Scene* world)
+void GameManagerSystem::SpawnShaderball(Scene* scene)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* shaderball = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* shaderball = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	EntityTransform& shaderballTrans = shaderball->GetTransform();
 	shaderballTrans.SetLocalTranslation(Vector(0.0f, 5.0f, 0.0f));
-	DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(world, shaderball, "Models/shaderball/PolyEngine_shaderball.fbx", eResourceSource::GAME);
-	MeshRenderingComponent* ballMesh = world->GetComponent<MeshRenderingComponent>(shaderball);
+	DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(scene, shaderball, "Models/shaderball/PolyEngine_shaderball.fbx", eResourceSource::GAME);
+	MeshRenderingComponent* ballMesh = scene->GetComponent<MeshRenderingComponent>(shaderball);
 	ballMesh->SetMaterial(0, Material(Color(1.0f, 1.0f, 1.0f), Color(1.0f, 1.0f, 0.0f), 1.0f, 1.0f, 0.5f));
 	ballMesh->SetMaterial(1, Material(Color(1.0f, 1.0f, 1.0f), Color(0.4f, 0.4f, 0.4f), 1.0f, 1.0f, 0.5f));
 	shaderballTrans.SetLocalScale(0.1f);
@@ -457,41 +462,41 @@ void GameManagerSystem::SpawnShaderball(Scene* world)
 
 // #pragma region Spritesheet examples
 
-void GameManagerSystem::SpawnSpritesheet11(Scene* world, Vector pos)
+void GameManagerSystem::SpawnSpritesheet11(Scene* scene, Vector pos)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* spriteSheetEnt = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* spriteSheetEnt = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	EntityTransform& SpriteSheetTrans = spriteSheetEnt->GetTransform();
 	SpriteSheetTrans.SetLocalTranslation(pos);
 	SpriteSheetTrans.SetLocalScale(Vector(1.0f, 1.0f, 1.0f));
 	SpritesheetSettings settings;
 	settings.SubImages = Vector2f(1.0f, 1.0f);
 	settings.SpritePath = "Textures/test_1_1.png";
-	DeferredTaskSystem::AddComponentImmediate<SpritesheetComponent>(world, spriteSheetEnt, settings);
+	DeferredTaskSystem::AddComponentImmediate<SpritesheetComponent>(scene, spriteSheetEnt, settings);
 	gameMgrCmp->GameEntities.PushBack(spriteSheetEnt);
 }
 
-void GameManagerSystem::SpawnSpritesheet22(Scene* world, Vector pos)
+void GameManagerSystem::SpawnSpritesheet22(Scene* scene, Vector pos)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* spriteSheetEnt = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* spriteSheetEnt = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	EntityTransform& SpriteSheetTrans = spriteSheetEnt->GetTransform();
 	SpriteSheetTrans.SetLocalTranslation(pos);
 	SpriteSheetTrans.SetLocalScale(Vector(1.0f, 1.0f, 1.0f));
 	SpritesheetSettings settings;
 	settings.SubImages = Vector2f(2.0f, 2.0f);
 	settings.SpritePath = "Textures/test_2_2.png";
-	DeferredTaskSystem::AddComponentImmediate<SpritesheetComponent>(world, spriteSheetEnt, settings);
+	DeferredTaskSystem::AddComponentImmediate<SpritesheetComponent>(scene, spriteSheetEnt, settings);
 	gameMgrCmp->GameEntities.PushBack(spriteSheetEnt);
 }
 
-void GameManagerSystem::SpawnSpritesheet44(Scene* world, Vector pos)
+void GameManagerSystem::SpawnSpritesheet44(Scene* scene, Vector pos)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* spriteSheetEnt = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* spriteSheetEnt = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	EntityTransform& SpriteSheetTrans = spriteSheetEnt->GetTransform();
 	SpriteSheetTrans.SetLocalTranslation(pos);
 	SpriteSheetTrans.SetLocalScale(Vector(1.0f, 1.0f, 1.0f));
@@ -499,30 +504,30 @@ void GameManagerSystem::SpawnSpritesheet44(Scene* world, Vector pos)
 	settings.SubImages = Vector2f(4.0f, 4.0f);
 	settings.SpritePath = "Textures/test_4_4.png";
 	settings.SpriteColor = Color(0.0f, 1.0f, 0.0f, 0.5f);
-	DeferredTaskSystem::AddComponentImmediate<SpritesheetComponent>(world, spriteSheetEnt, settings);
+	DeferredTaskSystem::AddComponentImmediate<SpritesheetComponent>(scene, spriteSheetEnt, settings);
 	gameMgrCmp->GameEntities.PushBack(spriteSheetEnt);
 }
 
-void GameManagerSystem::SpawnSpritesheet42(Scene* world, Vector pos)
+void GameManagerSystem::SpawnSpritesheet42(Scene* scene, Vector pos)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* spriteSheetEnt = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* spriteSheetEnt = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	EntityTransform& SpriteSheetTrans = spriteSheetEnt->GetTransform();
 	SpriteSheetTrans.SetLocalTranslation(pos);
 	SpriteSheetTrans.SetLocalScale(Vector(1.0f, 1.0f, 1.0f));
 	SpritesheetSettings settings;
 	settings.SubImages = Vector2f(4.0f, 2.0f);
 	settings.SpritePath = "Textures/test_4_2.png";
-	DeferredTaskSystem::AddComponentImmediate<SpritesheetComponent>(world, spriteSheetEnt, settings);
+	DeferredTaskSystem::AddComponentImmediate<SpritesheetComponent>(scene, spriteSheetEnt, settings);
 	gameMgrCmp->GameEntities.PushBack(spriteSheetEnt);
 }
 
-void GameManagerSystem::SpawnSpritesheet41(Scene* world, Vector pos)
+void GameManagerSystem::SpawnSpritesheet41(Scene* scene, Vector pos)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* spriteSheetEnt = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* spriteSheetEnt = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	EntityTransform& SpriteSheetTrans = spriteSheetEnt->GetTransform();
 	SpriteSheetTrans.SetLocalTranslation(pos);
 	SpriteSheetTrans.SetLocalScale(Vector(1.0f, 1.0f, 1.0f));
@@ -530,15 +535,15 @@ void GameManagerSystem::SpawnSpritesheet41(Scene* world, Vector pos)
 	settings.SubImages = Vector2f(4.0f, 1.0f);
 	settings.SpritePath = "Textures/test_4_1.png";
 	settings.SpriteColor = Color::RED;
-	DeferredTaskSystem::AddComponentImmediate<SpritesheetComponent>(world, spriteSheetEnt, settings);
+	DeferredTaskSystem::AddComponentImmediate<SpritesheetComponent>(scene, spriteSheetEnt, settings);
 	gameMgrCmp->GameEntities.PushBack(spriteSheetEnt);
 }
 
-void GameManagerSystem::SpawnSpritesheet44Random(Scene* world, Vector pos)
+void GameManagerSystem::SpawnSpritesheet44Random(Scene* scene, Vector pos)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* spriteSheetEnt = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* spriteSheetEnt = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	EntityTransform& SpriteSheetTrans = spriteSheetEnt->GetTransform();
 	SpriteSheetTrans.SetLocalTranslation(pos);
 	SpriteSheetTrans.SetLocalScale(Vector(1.0f, 1.0f, 1.0f));
@@ -546,15 +551,15 @@ void GameManagerSystem::SpawnSpritesheet44Random(Scene* world, Vector pos)
 	settings.SubImages = Vector2f(4.0f, 4.0f);
 	settings.SpritePath = "Textures/test_4_4.png";
 	settings.IsRandomStartFrame = true;
-	DeferredTaskSystem::AddComponentImmediate<SpritesheetComponent>(world, spriteSheetEnt, settings);
+	DeferredTaskSystem::AddComponentImmediate<SpritesheetComponent>(scene, spriteSheetEnt, settings);
 	gameMgrCmp->GameEntities.PushBack(spriteSheetEnt);
 }
 
-void GameManagerSystem::SpawnSpritesheetGandalf(Scene* world, Vector pos)
+void GameManagerSystem::SpawnSpritesheetGandalf(Scene* scene, Vector pos)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* spriteSheetEnt = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* spriteSheetEnt = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	EntityTransform& SpriteSheetTrans = spriteSheetEnt->GetTransform();
 	SpriteSheetTrans.SetLocalTranslation(pos);
 	SpriteSheetTrans.SetLocalScale(Vector(1.0f, 1.0f, 1.0f));
@@ -562,7 +567,7 @@ void GameManagerSystem::SpawnSpritesheetGandalf(Scene* world, Vector pos)
 	settings.SubImages = Vector2f(4.0f, 4.0f);
 	settings.SpritePath = "Textures/gandalf_anim.png";
 	settings.Speed = 0.2f;
-	DeferredTaskSystem::AddComponentImmediate<SpritesheetComponent>(world, spriteSheetEnt, settings);
+	DeferredTaskSystem::AddComponentImmediate<SpritesheetComponent>(scene, spriteSheetEnt, settings);
 	gameMgrCmp->GameEntities.PushBack(spriteSheetEnt);
 }
 
@@ -571,11 +576,11 @@ void GameManagerSystem::SpawnSpritesheetGandalf(Scene* world, Vector pos)
 
 // #pragma region Particle Examples
 
-ParticleComponent* GameManagerSystem::SpawnEmitterDefault(Scene* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterDefault(Scene* scene, Vector pos)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	EntityTransform& particlesTrans = particlesEnt->GetTransform();
 	particlesTrans.SetLocalTranslation(pos);
 
@@ -600,15 +605,15 @@ ParticleComponent* GameManagerSystem::SpawnEmitterDefault(Scene* world, Vector p
 
 	gameMgrCmp->GameEntities.PushBack(particlesEnt);
 
-	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(world, particlesEnt, settings);
+	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(scene, particlesEnt, settings);
 	return particleCmp;
 }
 
-ParticleComponent* GameManagerSystem::SpawnEmitterWorldSpace(Scene* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterWorldSpace(Scene* scene, Vector pos)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	EntityTransform& particlesTrans = particlesEnt->GetTransform();
 	particlesTrans.SetLocalTranslation(pos);
 
@@ -631,15 +636,15 @@ ParticleComponent* GameManagerSystem::SpawnEmitterWorldSpace(Scene* world, Vecto
 
 	gameMgrCmp->GameEntities.PushBack(particlesEnt);
 
-	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(world, particlesEnt, settings);
+	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(scene, particlesEnt, settings);
 	return particleCmp;
 }
 
-ParticleComponent* GameManagerSystem::SpawnEmitterLocalSpace(Scene* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterLocalSpace(Scene* scene, Vector pos)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	EntityTransform& particlesTrans = particlesEnt->GetTransform();
 	particlesTrans.SetLocalTranslation(pos);
 
@@ -660,50 +665,51 @@ ParticleComponent* GameManagerSystem::SpawnEmitterLocalSpace(Scene* world, Vecto
 
 	gameMgrCmp->GameEntities.PushBack(particlesEnt);
 
-	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(world, particlesEnt, settings);
+	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(scene, particlesEnt, settings);
 	return particleCmp;
 }
 
-ParticleComponent* GameManagerSystem::SpawnEmitterAmbient(Scene* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterAmbient(Scene* scene, Vector pos)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	EntityTransform& particlesTrans = particlesEnt->GetTransform();
 	particlesTrans.SetLocalTranslation(pos);
 
 	SpritesheetSettings spriteSettings;
 	spriteSettings.SubImages = Vector2f(2.0f, 2.0f);
-	spriteSettings.SpritePath = "Textures/test_2_2.png";
+	spriteSettings.SpritePath = "Textures/strokes_2_2.png";
 
 	ParticleEmitter::Settings settings;
-	settings.MaxSize = 500;
+	settings.MaxSize = 1000;
 	settings.InitialSize = 500;
 	settings.Spritesheet = spriteSettings;
 	settings.SimulationSpace = ParticleEmitter::eSimulationSpace::WORLD_SPACE;
 	settings.BurstTimeMin = 1.0f;
 	settings.BurstTimeMax = 2.0f;
 	settings.BurstSizeMin = 10;
-	settings.BurstSizeMax = 20;
-	settings.BaseColor = Color(1.0f, 1.0f, 1.0f, 0.5f);
+	settings.BurstSizeMax = 50;
+	settings.Albedo = Color(0.5f, 0.5f, 1.0f, 0.5f);
+	settings.Emissive = Color(100.0f, 0.5f, 1.0f, 1.0f);
 	settings.ParticleInitFunc = [](ParticleEmitter::Particle* p) {
-		p->Position += RandomVectorRange(-1.0f, 1.0f) * 10.0f;
-		p->Velocity = RandomVectorRange(-1.0f, 1.0f) * 0.001f;
+		p->Position += RandomVectorRange(-1.0f, 1.0f) * 1000.0f;
+		p->Velocity = RandomVectorRange(-1.0f, 1.0f) * 10.0f;
 		p->LifeTime = RandomRange(5.0f, 10.0f);
-		p->Scale = Vector::ONE * RandomRange(0.025f, 0.05f);
+		p->Scale = Vector::ONE * RandomRange(0.5f, 2.0f);
 	};
 
 	gameMgrCmp->GameEntities.PushBack(particlesEnt);
 
-	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(world, particlesEnt, settings);
+	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(scene, particlesEnt, settings);
 	return particleCmp;
 }
 
-ParticleComponent* GameManagerSystem::SpawnEmitterAmbientWind(Scene* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterAmbientWind(Scene* scene, Vector pos)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	EntityTransform& particlesTrans = particlesEnt->GetTransform();
 	particlesTrans.SetLocalTranslation(pos);
 
@@ -720,7 +726,7 @@ ParticleComponent* GameManagerSystem::SpawnEmitterAmbientWind(Scene* world, Vect
 	settings.BurstTimeMax = 2.0f;
 	settings.BurstSizeMin = 200;
 	settings.BurstSizeMax = 400;
-	settings.BaseColor = Color(1.0f, 1.0f, 1.0f, 0.1f);
+	settings.Albedo = Color(1.0f, 1.0f, 1.0f, 0.1f);
 	settings.ParticleInitFunc = [](ParticleEmitter::Particle* p) {
 		p->Position += Vector(-20.0f, 2.0f, 0.0f) + RandomVectorRange(-1.0f, 1.0f) * 10.0f;
 		p->Velocity = Vector(RandomRange(0.75f, 1.0f) * 0.5f, 0.0f, 0.0f);
@@ -730,15 +736,15 @@ ParticleComponent* GameManagerSystem::SpawnEmitterAmbientWind(Scene* world, Vect
 
 	gameMgrCmp->GameEntities.PushBack(particlesEnt);
 
-	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(world, particlesEnt, settings);
+	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(scene, particlesEnt, settings);
 	return particleCmp;
 }
 
-ParticleComponent* GameManagerSystem::SpawnEmitterHeart(Scene* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterHeart(Scene* scene, Vector pos)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	// EntityTransform& particlesTrans = particlesEnt->GetTransform();
 	// particlesTrans.SetLocalTranslation(pos);
 
@@ -749,7 +755,7 @@ ParticleComponent* GameManagerSystem::SpawnEmitterHeart(Scene* world, Vector pos
 
 	ParticleEmitter::Settings settings;
 	settings.MaxSize = 1000;
-	settings.BaseColor = Color(1.2f, 0.8f, 0.8f, 0.5f);
+	settings.Albedo = Color(1.2f, 0.8f, 0.8f, 0.5f);
 	settings.BurstTimeMin = 0.01f;
 	settings.BurstTimeMax = 0.05f;
 	settings.BurstSizeMin = 10;
@@ -771,15 +777,15 @@ ParticleComponent* GameManagerSystem::SpawnEmitterHeart(Scene* world, Vector pos
 
 	gameMgrCmp->GameEntities.PushBack(particlesEnt);
 
-	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(world, particlesEnt, settings);
+	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(scene, particlesEnt, settings);
 	return particleCmp;
 }
 
-ParticleComponent* GameManagerSystem::SpawnEmitterHeartImpact(Scene* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterHeartImpact(Scene* scene, Vector pos)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	// EntityTransform& particlesTrans = particlesEnt->GetTransform();
 	// particlesTrans.SetLocalTranslation(pos);
 
@@ -789,7 +795,7 @@ ParticleComponent* GameManagerSystem::SpawnEmitterHeartImpact(Scene* world, Vect
 
 	ParticleEmitter::Settings settings;
 	settings.MaxSize = 1000;
-	settings.BaseColor = Color(1.5f, 1.0f, 1.0f, 0.95f);
+	settings.Albedo = Color(1.5f, 1.0f, 1.0f, 0.95f);
 	settings.BurstTimeMin = 0.1f;
 	settings.BurstTimeMax = 0.5f;
 	settings.BurstSizeMin = 10;
@@ -817,15 +823,15 @@ ParticleComponent* GameManagerSystem::SpawnEmitterHeartImpact(Scene* world, Vect
 
 	gameMgrCmp->GameEntities.PushBack(particlesEnt);
 
-	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(world, particlesEnt, settings);
+	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(scene, particlesEnt, settings);
 	return particleCmp;
 }
 
-ParticleComponent* GameManagerSystem::SpawnEmitterHeartImpact2(Scene* world, Vector pos)
+ParticleComponent* GameManagerSystem::SpawnEmitterHeartImpact2(Scene* scene, Vector pos)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(world);
+	Entity* particlesEnt = DeferredTaskSystem::SpawnEntityImmediate(scene);
 	// EntityTransform& particlesTrans = particlesEnt->GetTransform();
 	// particlesTrans.SetLocalTranslation(pos);
 
@@ -835,7 +841,7 @@ ParticleComponent* GameManagerSystem::SpawnEmitterHeartImpact2(Scene* world, Vec
 
 	ParticleEmitter::Settings settings;
 	settings.MaxSize = 1000;
-	settings.BaseColor = Color(2.0f, 0.5f, 0.5f, 0.2f);
+	settings.Albedo = Color(2.0f, 0.5f, 0.5f, 0.2f);
 	settings.BurstTimeMin = 1.0f;
 	settings.BurstTimeMax = 1.0f;
 	settings.BurstSizeMin = 200;
@@ -865,18 +871,18 @@ ParticleComponent* GameManagerSystem::SpawnEmitterHeartImpact2(Scene* world, Vec
 
 	gameMgrCmp->GameEntities.PushBack(particlesEnt);
 
-	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(world, particlesEnt, settings);
+	ParticleComponent* particleCmp = DeferredTaskSystem::AddComponentImmediate<ParticleComponent>(scene, particlesEnt, settings);
 	return particleCmp;
 }
 
-void GameManagerSystem::SpawnHeartSystem(Scene* world)
+void GameManagerSystem::SpawnHeartSystem(Scene* scene)
 {
-	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
-	gameMgrCmp->particleHeart = SpawnEmitterHeart(world, Vector(0.0f, 4.0f, 0.0f));
-	gameMgrCmp->particleHeartImpact0 = SpawnEmitterHeartImpact(world, Vector(0.0f, 4.0f, 0.0f));
-	gameMgrCmp->particleHeartImpact1 = SpawnEmitterHeartImpact(world, Vector(0.0f, 4.0f, 0.0f));
-	gameMgrCmp->particleHeartImpact2 = SpawnEmitterHeartImpact2(world, Vector(0.0f, 4.0f, 0.0f));
+	gameMgrCmp->particleHeart = SpawnEmitterHeart(scene, Vector(0.0f, 4.0f, 0.0f));
+	gameMgrCmp->particleHeartImpact0 = SpawnEmitterHeartImpact(scene, Vector(0.0f, 4.0f, 0.0f));
+	gameMgrCmp->particleHeartImpact1 = SpawnEmitterHeartImpact(scene, Vector(0.0f, 4.0f, 0.0f));
+	gameMgrCmp->particleHeartImpact2 = SpawnEmitterHeartImpact2(scene, Vector(0.0f, 4.0f, 0.0f));
 }
 
 // #pragma endregion
